@@ -1,0 +1,89 @@
+Goal
+Desn applicatiign aon that boosts competitiveness between service providers and seekers by ensuring full transparency of pricing, service details, deadlines, and quality. The app should enable users to post service requests and allow multiple providers to bid on these requests in real time, resulting in better offers for the end user.
+
+Return Format
+Provide a comprehensive, step-by-step solution that covers:
+	1.	High-Level Design
+	•	A conceptual, technology-agnostic system design detailing the core workflows and user journeys.
+	•	Overall user flow from ad creation to offer submission, including review and final rating.
+	2.	User Interface & Core Features
+	•	Map Interface:
+	•	The primary screen should be a map displaying all active service ads within the user’s vicinity.
+	•	Ad Posting with “I NEED” Button:
+	•	A prominent, central “I NEED” button in the bottom menu that enables users to instantly post an ad.
+	•	When posting an ad, users must include a photo of the service or location, along with essential details (e.g., dimensions, materials, deadlines).
+	•	AI Question Handler System:
+	•	When a user submits a request using the “I NEED” button, an AI-powered question handler should automatically engage the user.
+	•	This system will ask context-sensitive follow-up questions as if it were an expert in the relevant field, ensuring that the request is detailed and accurately categorized.
+	•	Example Scenario (Painting an Apartment):
+	•	If a user wishes to request a painting service, the AI might ask:
+	•	“How many square meters need to be painted?”
+	•	“Do the walls require any repair work before painting?”
+	•	“Is there any damage such as mold, peeling paint, or other issues?”
+	•	“Could you upload pictures of the area?”
+	•	“What type of paint or material would you like to use?”
+	•	After answering, the user can review the ad details and optionally change the automatically assigned category if necessary.
+	•	Bidding System:
+	•	Service providers or individuals can submit competitive offers on posted ads.
+	•	Each offer should detail the proposed price, timeline, service quality, and any additional specifics.
+	•	Social Feed (Connections and Activity Timeline):
+	•	An integrated feed, similar to Facebook, that displays all user interactions and connections.
+	•	The feed should show posts related to ad creation, submitted offers, completed jobs, reviews, and other community activities.
+	•	Review & Rating Mechanism:
+	•	After a service is completed, the ad poster can review and rate the provider, including an option to attach a photo of the finished work.
+	3.	Data Models & Workflows
+	•	Define key entities such as Users, Ads, Offers, Reviews, and Feed Items, and outline their relationships.
+	•	Include detailed example scenarios:
+	•	Example 1 (Window Frame Replacement):
+	•	A user posts an ad with specifications (dimensions, material details, photo) for replacing window frames.
+	•	Multiple companies submit bids (e.g., “Company 1: 1000 BGN with a 10-day timeline and a 5-year warranty” vs. “Company 2: 950 BGN with enhanced quality and faster completion”).
+	•	Example 2 (Dog Walking Service):
+	•	A user posts an ad titled “Dog Walking (Pincher) for 11.06.23,” including details like dog weight, behavior, required walking time, and proposed fee.
+	•	Various nearby users see the ad on the map and submit their offers, potentially differing in price, service duration, or experience.
+	•	Example 3 (Painting an Apartment with AI Assistance):
+	•	A user selects “I NEED” and begins to post a request for painting an apartment.
+	•	The AI Question Handler engages with queries such as:
+	•	“How many square meters need painting?”
+	•	“Do the walls need repair or have issues like mold or peeling paint?”
+	•	“Please upload pictures of the current state.”
+	•	“What type of paint or material do you prefer?”
+	•	The user reviews the gathered details, confirms the category, and submits a detailed, clear ad.
+	4.	Security, Privacy, and Moderation
+	•	Outline measures to protect user data and ensure secure authentication and authorization.
+	•	Describe strategies for content moderation, especially for user-generated content (images, text) and location-based data.
+	•	Highlight compliance with privacy regulations, particularly regarding location sharing and AI data processing.
+	5.	Potential Pitfalls & Mitigation Strategies
+	•	Identify risks such as fraudulent offers, spam, high concurrent usage, and user disputes.
+	•	Propose strategies to address these challenges, such as robust user verification, effective content moderation tools, and efficient real-time data handling.
+	6.	Suggested Development Roadmap
+	•	Provide a phased plan starting with the minimum viable product (MVP) that includes the core map interface, ad posting with the “I NEED” button, AI question handler, and bidding functionality.
+	•	Outline subsequent phases to integrate the social feed, enhanced review system, and advanced moderation and notification features.
+
+    Warnings
+	•	Privacy & Data Protection: Ensure compliance with all relevant privacy regulations when handling location data, user interactions, and AI-driven data collection.
+	•	User Verification & Security: Implement robust authentication and authorization to prevent fraudulent or malicious behavior.
+	•	Scalability & Load Management: Design the system to handle high concurrency, especially when multiple users post or bid simultaneously.
+	•	Content Moderation: Establish effective moderation processes to manage and filter inappropriate or fraudulent content, particularly in user-generated images and AI-collected data.
+
+    Context Dump
+Incorporate these detailed background elements into your design:
+	•	Core Concept:
+	•	The application creates a transparent marketplace where both service seekers and providers can view and respond to offers.
+	•	Competitors can outbid one another by offering lower prices, shorter timelines, or higher quality services.
+	•	User Experience Details:
+	•	The primary interface is a map that shows all active offers around the user’s location.
+	•	Users can post ads quickly by tapping the central “I NEED” button, which requires a photo and essential service details.
+	•	An AI Question Handler system will engage users during ad creation, automatically asking follow-up questions to ensure that every request is detailed and clear, and that it is correctly categorized without requiring the customer to manually select a category.
+	•	Service providers then submit detailed offers on these ads, fostering competitive bidding.
+	•	Example Scenarios:
+	•	Window Frame Replacement: A user posts an ad with detailed specifications and a photo. Companies submit offers that vary in price and timeline, allowing them to compete for the job.
+	•	Dog Walking: A user posts an ad for dog walking with title, description, date, and fee details. Multiple users see the ad on the map and submit their offers based on availability and experience.
+	•	Painting an Apartment with AI Assistance:
+	•	A user initiates an ad for painting an apartment by tapping “I NEED.”
+	•	The AI prompts with expert questions: “How many square meters need painting? Do the walls require any repair work? Are there issues like mold or peeling paint? Please upload relevant pictures. What type of material do you prefer?”
+	•	The user reviews the details and confirms the category before posting the ad.
+	•	Social Feed Requirement:
+	•	In addition to the map and bidding features, include a comprehensive social feed that displays connections between users.
+	•	The feed should show a timeline of user activities such as new ad postings, submitted offers, completed jobs, reviews, and other interactions, similar to social feeds on platforms like Facebook.
+
+    Design the application with these requirements in mind, leaving the choice of the technical stack entirely to the software engineer while ensuring the solution is robust, user-friendly, and scalable.
