@@ -5,6 +5,26 @@ All notable changes to the Service Marketplace project will be documented in thi
 ## [Unreleased]
 
 ### Added
+- Production Deployment Guidelines for Order Payments Module
+  - Added comprehensive guide for deploying the Order Payments module to production
+  - Created detailed rollback plan for handling deployment issues
+  - Added monitoring setup instructions for payment processing
+  - Included compliance and maintenance recommendations
+- UI and Animation Enhancements
+  - New design system with consistent styling using Tailwind CSS
+  - Framer Motion animations for enhanced user experience
+  - Reusable UI components with shadcn/ui integration
+  - Poppins font family implementation across the application
+  - Interactive card components with hover and tap animations
+  - Page transition animations with fade-in and slide-up effects
+  - Enhanced loading screen with engaging animations
+  - Animated rating component for trust-building
+  - Modern color palette with soft blue, neutral grays, and warm accent tones
+  - Comprehensive design system documentation
+  - Motion utility functions for consistent animations
+  - Updated Material UI theme to match the new design system
+  - Animation utility classes for common effects
+  - CSS variables for theme configuration
 - Real-Time Notifications & Messaging System
   - Firebase Cloud Messaging integration for push notifications
   - Comprehensive notification service with Firestore storage
@@ -32,6 +52,33 @@ All notable changes to the Service Marketplace project will be documented in thi
   - Created dedicated provider reviews page with detailed stats
   - Connected review system with the social feed
 - Initial project structure setup
+- Order Payments Module implementation
+  - Comprehensive order management system with Firebase integration
+  - Stripe payment processing integration with test and production environments
+  - Order status tracking and management
+  - Payment history and transaction records
+  - Order details view with real-time updates
+  - Payment processing workflow with multiple payment methods
+  - Order filtering and sorting capabilities
+  - Responsive design for all screen sizes
+  - Comprehensive documentation including:
+    - Integration guide for main application
+    - API documentation
+    - Component documentation
+    - Performance testing guide
+    - Usability testing framework
+  - Performance optimization features:
+    - Lazy loading for order lists
+    - Image optimization
+    - Caching strategies
+  - Usability testing components:
+    - Feedback collection system
+    - Interaction recording
+    - Task-based testing scenarios
+  - Security features:
+    - Secure payment processing
+    - Authentication integration
+    - Role-based access control
 - React frontend with directory structure
 - Node.js backend with Express server
 - Firebase configuration for authentication, database, and storage
@@ -123,7 +170,6 @@ All notable changes to the Service Marketplace project will be documented in thi
   - Image attachments with preview and fullscreen view capabilities
   - Message reactions with emoji support (👍, ❤️, 😂, 😮, 😢, 🎉)
   - File storage service for managing file uploads and downloads
-  
 - AI-Powered Features with Vercel AI SDK Integration:
   - Integrated Vercel AI SDK for enhanced AI capabilities
   - Created AIContext for centralized AI feature management
@@ -157,7 +203,6 @@ All notable changes to the Service Marketplace project will be documented in thi
   - Resolved positioning conflicts between component and container styles
   - Ensured consistent styling approach across components
   - Fixed button alignment issues for visual consistency across the interface
-  - Improved "I NEED" button overlap with bottom navigation for modern floating appearance
 - Integration improvements for Map, Feed, and Bidding systems
   - Updated MapInterface to load real ads from Firestore instead of sample data
   - Improved ad marker display with category-specific icons
@@ -173,123 +218,26 @@ All notable changes to the Service Marketplace project will be documented in thi
   - Implemented automatic price extraction and form population
   - Created collapsible AI suggestion panel in the offer form
   - Added standalone price estimation in ad details view
-
-### Fixed
-- Resolved feed component import error by fixing case sensitivity in import paths
-- Fixed ESLint warnings related to unused imports in multiple components
-- Implemented missing feed components
-- Resolved authentication-related issues with context references
-- Fixed redirection after login to maintain user's intended navigation
-- Fixed geolocation error handling to provide better user feedback when permissions are denied
-- Corrected zoom button positioning to avoid overlap with navigation elements
-- Resolved chat button visibility issue by repositioning it to avoid being hidden
-- Identified integration gap between newer AI SDK components and the ad creation process
-  - Discovered that newer AI components (AIQuestionSuggestions, AICategoryPrediction, AIPriceEstimation) 
-    in service-marketplace/client/src/components/ai/ are not fully integrated with the AdAIQuestions step
-  - Found that AIContext is using standard API approach instead of Vercel AI SDK as noted in the component
-
-### Changed
-- Updated FeedScreen component to improve loading and refresh experience
-- Enhanced the ReviewContext to properly integrate with the FeedContext for activity feeds
-- Improved user experience with authentication flow
-- Enhanced security by protecting routes that require authentication
-- Updated navigation to handle authenticated and unauthenticated states
-- Improved message input UI with attachment buttons
-- Enhanced message bubble design to display attachments and reactions
-- Updated MessagingContext to support new features 
-- Refactored AI integration to use Vercel AI SDK for improved performance and capabilities
-- Simplified the ad creation process in the AdAIQuestions component:
-  - Converted "Add Your Own Question" to a simple "Additional details" field
-  - Improved UX by removing the separate question adding flow
-  - Enhanced the input field with multiline support for more detailed information
-  - Streamlined the user experience by removing unnecessary UI elements
-  - Combined Smart Recommendations with Additional details for a more compact and user-friendly interface
-  - Added pro tips directly in the Additional details section to guide users
-
-### Project Checklist Status
-
-#### Project Overview & Architecture
-- [x] Define System Architecture
-- [x] Create a high-level diagram showing all modules and their interactions
-- [x] Outline communication channels and data flows between components
-
-#### Core Modules & Components
-- [x] Map Interface Module
-  - [x] Design and implement a dynamic map display as the primary UI
-  - [x] Integrate geolocation services to display user position
-  - [x] Add interactive ad markers (with clustering as needed)
-  - [ ] Correlation: Connect with the Ad Posting module to display newly created ads and with the Bidding module to update offers in real time
-- [x] Ad Posting Module ("I NEED" Button)
-  - [x] Basic UI component for the "I NEED" button in bottom navigation
-  - [x] Develop the ad creation screen for photo uploads and service details
-  - [x] Enable a review screen for users to verify ad details before posting
-  - [x] Correlation: Integrate tightly with the AI Question Handler System to enrich ad details
-- [x] AI Question Handler System
-  - [x] Backend service for generating follow-up questions
-  - [x] API endpoints for question generation and category determination
-  - [x] Frontend integration with ad creation flow
-  - [x] Example Scenario implementation for various service types
-  - [x] Automatic category determination from ad content
-- [x] Bidding System Module
-  - [x] User interface for service providers to view and submit offers
-  - [x] Real-time bidding updates and status management
-  - [x] Detailed offer submissions with price, timeline, and service details
-  - [x] Integration with user profiles and navigation system
-- [x] Social Feed Module
-  - [x] Dynamic feed displaying new ads, offers, completed jobs, and reviews
-  - [x] Connectivity features showing user interactions and relationships
-  - [x] Integration with Ad Posting, Bidding, and Review modules
-- [x] Review & Rating System
-  - [x] User interface for rating and reviewing service providers
-  - [x] Photo and comment attachments for detailed reviews
-  - [x] Feedback system for informing future provider selection
-  - [x] Integration with user profiles and the Social Feed module
-- [x] User Management & Profiles
-  - [x] Secure user registration, authentication, and profile management
-  - [x] Role differentiation between service seekers and providers
-  - [x] User reputation management based on reviews and completed jobs
-  - [x] Cross-module integration for user data and interactions
-
-#### Backend & Data Infrastructure
-- [x] Data Models & Database Schema (Initial setup)
-  - [x] Implementation of ad service for creating and updating ads
-  - [x] Firebase Storage integration for ad images
-  - [x] Bidding service with offer management functionality
-  - [x] Feed service for activity tracking and display
-  - [x] Review service with rating and feedback capabilities
-  - [x] User service with authentication and profile management
-- [ ] Real-Time Notifications & Messaging
-
-#### Security, Privacy, & Moderation
-- [x] Security & User Verification (Initial setup)
-- [ ] Content Moderation & Privacy Compliance
-
-#### Testing, Deployment & Documentation
-- [x] Documentation & Collaboration
-  - [x] Project README
-  - [x] Design System Documentation
-  - [x] Change Log
-- [ ] Testing & Quality Assurance
-- [ ] Deployment & Scaling Strategy
-
-## Next Steps
-- Implement real-time notifications and messaging between users
-- Connect the Ad Posting module with the Map Interface for real-time updates
-- Add content moderation tools for user-generated content
-- Implement comprehensive testing (unit, integration, and UI tests)
-- Set up CI/CD pipeline for automated deployment
-
-## Recently Completed
-
-### Added
-- AI SDK Integration with Ad Creation Process
-  - Integrated the newer AI components (AIQuestionSuggestions, AICategoryPrediction, AIPriceEstimation) with the ad creation workflow
-  - Updated the AIContext to properly support the Vercel AI SDK approach
-  - Created a more user-friendly question interface with clickable AI-suggested questions
-  - Added AI-powered price estimation to automatically suggest price ranges
-  - Enhanced the categorization feature with primary and secondary category suggestions
-  - Improved the overall UX of the "Specific Details" step in ad creation with modern UI components
-  - Fixed integration issues between the AI SDK and the ad creation process
+- Feed and Profile Navigation Improvements
+  - Added missing route for offer details to prevent blank screens when clicking offers in feed
+  - Made activity items in profile page interactive and clickable with visual hover feedback
+  - Improved navigation between related screens to create a more cohesive experience
+- Bidding Service Enhancements
+  - Added getOfferById function to retrieve offer details by ID
+  - Enhanced AdDetailPage to properly handle offer-based navigation
+  - Implemented smart offer-to-ad resolution for feed navigation
+- Social Media-like Features for Offers
+  - Added commenting system to offers with real-time updates
+  - Implemented emoji reactions for offers and comments
+- Mobile View Enhancements
+  - Improved search bar and category filter positioning on mobile devices
+  - Added proper handling of mobile browser UI elements (address bar, notches, etc.)
+  - Implemented viewport height calculations for consistent UI across devices
+  - Added support for safe area insets on modern mobile browsers
+  - Enhanced map container sizing for mobile devices
+  - Adjusted bottom slider padding to prevent overlap with navigation
+  - Added viewport meta tags for better mobile experience
+  - Fixed elements hiding under the browser address bar
 
 ### Changed
 - Refactored AdAIQuestions component to utilize the more powerful AI components
@@ -298,6 +246,16 @@ All notable changes to the Service Marketplace project will be documented in thi
 - Improved the ad creation experience with more intuitive AI-powered assistance
 - Modernized the interface for adding custom questions during ad creation
 - Updated server configuration to serve the correct files with the new AI components
+- Enhanced profile activity UX with visual hover feedback and proper navigation to related content
+- Improved feed navigation by adding missing route for offer details view
+- Refactored AdDetailPage to smartly handle both ad and offer routes
+- Modified "Latest in the area" section to display only service requests and exclude offers
+- Removed "New service request:" prefix from titles in the service request listings for cleaner display
+
+### Fixed
+- Fixed "No ad ID provided" error when clicking on offers in the feed
+- Added proper offer-to-ad resolution in the AdDetailPage component
+- Enhanced error handling with more specific and helpful error messages
 
 ### Removed
 - Obsolete question rendering logic in the AdAIQuestions component
@@ -322,32 +280,3 @@ All notable changes to the Service Marketplace project will be documented in thi
   - User data protection mechanisms
 - Admin middleware for protected routes
 - Notification context for client-side notification management
-
-## [Unreleased]
-
-### Added
-- Enhanced real-time messaging features:
-  - User typing indicators that show when someone is currently typing
-  - File attachments support for messages with upload progress and previews
-  - Image attachments with preview and fullscreen view capabilities
-  - Message reactions with emoji support (👍, ❤️, 😂, 😮, 😢, 🎉)
-  - File storage service for managing file uploads and downloads
-  
-- AI-Powered Features with Vercel AI SDK Integration:
-  - Integrated Vercel AI SDK for enhanced AI capabilities
-  - Created AIContext for centralized AI feature management
-  - Implemented AI-powered question assistance for service requests
-  - Added smart service categorization with primary and secondary categories
-  - Built AI-powered price estimation with detailed cost breakdowns
-  - Developed AI chatbot for user support with real-time conversation
-  - Created AI-generated service provider recommendations
-  - Designed reusable AI components for seamless integration
-  - Implemented server-side API routes compatible with Vercel AI SDK
-  - Added comprehensive error handling and fallback responses
-  - Integrated AI chatbot into main application layout
-  
-### Changed
-- Improved message input UI with attachment buttons
-- Enhanced message bubble design to display attachments and reactions
-- Updated MessagingContext to support new features 
-- Refactored AI integration to use Vercel AI SDK for improved performance and capabilities 

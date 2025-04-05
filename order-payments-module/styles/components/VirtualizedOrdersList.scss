@@ -1,0 +1,83 @@
+@import '../responsive';
+
+.virtualized-orders-container {
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+  padding: 0;
+  margin: 0;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  
+  // Apply custom scrollbar styles
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 10px;
+    
+    &:hover {
+      background: #9ca3af;
+    }
+  }
+}
+
+.virtualized-orders-content {
+  position: relative;
+  width: 100%;
+}
+
+.virtualized-order-item {
+  position: absolute;
+  width: 100%;
+  padding: 0.5rem;
+  will-change: transform;
+  
+  @include respond-to(sm) {
+    padding: 0.75rem;
+  }
+}
+
+.virtualized-orders-loading,
+.virtualized-orders-end,
+.virtualized-orders-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+  
+  @include respond-to(sm) {
+    padding: 2rem;
+    font-size: 1rem;
+  }
+}
+
+.loader {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 3px solid rgba(156, 163, 175, 0.3);
+  border-radius: 50%;
+  border-top-color: #3b82f6;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 0.5rem;
+  
+  @include respond-to(sm) {
+    width: 2rem;
+    height: 2rem;
+    border-width: 4px;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+} 

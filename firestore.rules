@@ -18,6 +18,24 @@ service cloud.firestore {
     match /offers/{offerId} {
       allow read: if request.auth != null;
       allow write: if request.auth != null;
+      
+      // Additional validation for reactions updates
+      allow update: if request.auth != null && 
+        (request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['reactions', 'lastActivity', 'commentCount']));
+    }
+    
+    // OfferComments collection - allow authenticated users to read and write
+    match /offerComments/{commentId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && 
+        request.resource.data.userId == request.auth.uid;
+      // Only allow the comment author to delete or the offer owner
+      allow delete: if request.auth != null && 
+        (resource.data.userId == request.auth.uid);
+      // Only allow reaction updates
+      allow update: if request.auth != null && 
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']);
     }
     
     // Activities/feed collection - allow authenticated users to read and write

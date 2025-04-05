@@ -1,0 +1,16 @@
+# Environment files with sensitive API keys
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Keep the example file (without real keys)
+!.env.example
+
+# Other files to ignore
+node_modules/
+dist/
+build/
+.DS_Store
+*.log 

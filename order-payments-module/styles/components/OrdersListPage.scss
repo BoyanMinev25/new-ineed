@@ -1,0 +1,118 @@
+@import '../responsive';
+
+.orders-list-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background-color: #f9fafb;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  
+  @include respond-to(md) {
+    padding: 1.5rem 2rem;
+  }
+  
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    
+    @include respond-to(xs) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  }
+  
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+    
+    @include respond-to(sm) {
+      font-size: 1.875rem;
+    }
+    
+    @include respond-to(lg) {
+      font-size: 2rem;
+    }
+  }
+  
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    
+    .btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 0.375rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      
+      @include respond-to(md) {
+        padding: 0.625rem 1.25rem;
+        font-size: 1rem;
+      }
+      
+      &-primary {
+        background-color: #3b82f6;
+        color: white;
+        
+        &:hover {
+          background-color: #2563eb;
+        }
+      }
+      
+      &-secondary {
+        background-color: white;
+        border-color: #d1d5db;
+        color: #374151;
+        
+        &:hover {
+          background-color: #f9fafb;
+        }
+      }
+    }
+  }
+  
+  &__error {
+    background-color: #fee2e2;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    
+    p {
+      color: #b91c1c;
+      margin: 0 0 0.75rem 0;
+      font-size: 0.875rem;
+    }
+  }
+  
+  &__content {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    min-height: 400px;
+  }
+  
+  &__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    
+    p {
+      color: #6b7280;
+      margin-top: 1rem;
+      font-size: 0.875rem;
+    }
+  }
+} 

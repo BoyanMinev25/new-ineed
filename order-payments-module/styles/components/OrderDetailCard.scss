@@ -1,0 +1,145 @@
+@import '../responsive';
+
+.order-detail-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  transition: all 0.2s ease-in-out;
+
+  &--clickable {
+    cursor: pointer;
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+  }
+
+  &--compact {
+    padding: 0.75rem;
+    
+    .order-detail-card__content {
+      margin-top: 0.5rem;
+    }
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+
+    @include respond-to(sm) {
+      align-items: center;
+    }
+  }
+
+  &__title {
+    margin: 0;
+    font-weight: 600;
+    color: #1a1a1a;
+    font-size: 1.25rem;
+
+    @include respond-to(sm) {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__content {
+    margin-top: 1rem;
+  }
+
+  &__description {
+    color: #4a4a4a;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    @include respond-to(sm) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  &__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+
+    span:first-child {
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .text-muted {
+      color: #6b7280;
+    }
+  }
+
+  &__dates {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    @include respond-to(sm) {
+      flex-direction: row;
+      gap: 1rem;
+    }
+
+    .text-muted {
+      color: #6b7280;
+    }
+  }
+
+  &__footer {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+
+    @include respond-to(sm) {
+      flex-wrap: nowrap;
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      text-align: center;
+      transition: all 0.2s ease-in-out;
+
+      &-primary {
+        background: #3b82f6;
+        color: white;
+        border: none;
+
+        &:hover {
+          background: #2563eb;
+        }
+      }
+
+      &-secondary {
+        background: white;
+        color: #4b5563;
+        border: 1px solid #d1d5db;
+
+        &:hover {
+          background: #f3f4f6;
+        }
+      }
+    }
+  }
+} 

@@ -1,0 +1,183 @@
+// Breakpoints
+$breakpoint-xs: 320px;
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+
+// Mixins for responsive design
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == xs {
+    @media (min-width: $breakpoint-xs) { @content; }
+  }
+  @else if $breakpoint == sm {
+    @media (min-width: $breakpoint-sm) { @content; }
+  }
+  @else if $breakpoint == md {
+    @media (min-width: $breakpoint-md) { @content; }
+  }
+  @else if $breakpoint == lg {
+    @media (min-width: $breakpoint-lg) { @content; }
+  }
+  @else if $breakpoint == xl {
+    @media (min-width: $breakpoint-xl) { @content; }
+  }
+}
+
+// Container widths
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+
+  @include respond-to(sm) {
+    max-width: 540px;
+  }
+
+  @include respond-to(md) {
+    max-width: 720px;
+  }
+
+  @include respond-to(lg) {
+    max-width: 960px;
+  }
+
+  @include respond-to(xl) {
+    max-width: 1140px;
+  }
+}
+
+// Grid system
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+// Responsive utilities
+.hide-xs {
+  @media (max-width: $breakpoint-xs - 1) {
+    display: none !important;
+  }
+}
+
+.hide-sm {
+  @media (max-width: $breakpoint-sm - 1) {
+    display: none !important;
+  }
+}
+
+.hide-md {
+  @media (max-width: $breakpoint-md - 1) {
+    display: none !important;
+  }
+}
+
+.hide-lg {
+  @media (max-width: $breakpoint-lg - 1) {
+    display: none !important;
+  }
+}
+
+.hide-xl {
+  @media (max-width: $breakpoint-xl - 1) {
+    display: none !important;
+  }
+}
+
+// Responsive text utilities
+.text-xs {
+  font-size: 0.75rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-md {
+  font-size: 1rem;
+}
+
+.text-lg {
+  font-size: 1.25rem;
+}
+
+.text-xl {
+  font-size: 1.5rem;
+}
+
+// Responsive spacing utilities
+.m-0 { margin: 0 !important; }
+.m-1 { margin: 0.25rem !important; }
+.m-2 { margin: 0.5rem !important; }
+.m-3 { margin: 1rem !important; }
+.m-4 { margin: 1.5rem !important; }
+.m-5 { margin: 3rem !important; }
+
+.p-0 { padding: 0 !important; }
+.p-1 { padding: 0.25rem !important; }
+.p-2 { padding: 0.5rem !important; }
+.p-3 { padding: 1rem !important; }
+.p-4 { padding: 1.5rem !important; }
+.p-5 { padding: 3rem !important; }
+
+// Responsive flex utilities
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+@include respond-to(sm) {
+  .flex-sm-column {
+    flex-direction: column;
+  }
+  .flex-sm-row {
+    flex-direction: row;
+  }
+}
+
+// Responsive order utilities
+.order-first {
+  order: -1;
+}
+
+.order-last {
+  order: 1;
+}
+
+// Responsive visibility utilities
+.visible-xs {
+  @media (max-width: $breakpoint-xs - 1) {
+    display: block !important;
+  }
+}
+
+.visible-sm {
+  @media (max-width: $breakpoint-sm - 1) {
+    display: block !important;
+  }
+}
+
+.visible-md {
+  @media (max-width: $breakpoint-md - 1) {
+    display: block !important;
+  }
+}
+
+.visible-lg {
+  @media (max-width: $breakpoint-lg - 1) {
+    display: block !important;
+  }
+}
+
+.visible-xl {
+  @media (max-width: $breakpoint-xl - 1) {
+    display: block !important;
+  }
+} 

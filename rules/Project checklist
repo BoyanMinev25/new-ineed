@@ -36,6 +36,11 @@ Core Modules & Components
     - Developed comprehensive review screen showing all ad details
     - Added edit capabilities for each section
     - Implemented status notifications for successful submission
+	• [x] Enhanced Ad Detail Page with AI information.
+    - Changed "Price range" to "Budget" for better user experience
+    - Added "Detailed Information" accordion that contains all AI Q&A and summary
+    - Moved location information to the detailed section for cleaner UI
+    - Improved overall layout of the ad details page
 	• [x] Correlation: Integrate tightly with the AI Question Handler System to enrich ad details.
     - Connected ad creation flow with AI Question Handler
     - Implemented dynamic question loading based on ad content

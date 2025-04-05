@@ -26,6 +26,9 @@ This document outlines the current implementation status of the Service Marketpl
    - ✅ Offer listing with status indicators
    - ✅ "Place Offer" button integration with map
    - ✓ Firebase Firestore implementation complete (migrated from localStorage)
+   - ✅ Social features for offers (comments and reactions)
+   - ✅ Real-time updates for comments and reactions
+   - ✅ Interactive emoji reactions for both offers and comments
 
 4. **Social Feed**
    - ✓ Feed implementation with Firebase Firestore
@@ -57,6 +60,16 @@ This document outlines the current implementation status of the Service Marketpl
    - ✅ User typing indicators
    - ✅ File and image attachments in messages
    - ✅ Message reactions (emoji reactions)
+
+7. **Social Media Features for Offers**
+   - ✅ Commenting system for offers with real-time updates
+   - ✅ Emoji reactions for offers with count indicators
+   - ✅ Emoji reactions for comments
+   - ✅ Collapsible comment interface with expand/collapse feature
+   - ✅ User-specific styling for comments (own vs. others)
+   - ✅ Avatar display for comment authors
+   - ✅ Relative timestamp display for comments
+   - ✅ Integration with Firestore for persistence
 
 ### Current Development Focus
 
@@ -91,6 +104,14 @@ We are currently implementing the Real-Time Notifications & Messaging system wit
    - ✓ Created messaging system with real-time updates
    - ✓ Added unread message and notification tracking
    - ✓ Integrated notifications with existing modules
+
+4. **Social Media Features**
+   - ✓ Implemented OfferComments component for commenting on offers
+   - ✓ Created OfferReactions for adding emoji reactions to offers
+   - ✓ Added OfferCommentReactions for comment-level reactions
+   - ✓ Extended bidding service with comment and reaction functions
+   - ✓ Updated Firestore security rules to protect new collections
+   - ✓ Enhanced OfferList component to display social interactions
 
 ### Next Implementation Priorities
 

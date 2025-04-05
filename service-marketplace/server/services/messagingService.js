@@ -17,21 +17,42 @@ class MessagingService {
    * @param {string} user1Id - First user ID
    * @param {string} user2Id - Second user ID
    * @param {string} adId - Optional ad ID if conversation is related to an ad
+   * @param {Object} metadata - Optional metadata for the conversation
    * @returns {Promise<string>} - Conversation ID
    */
-  async createConversation(user1Id, user2Id, adId = null) {
+  async createConversation(user1Id, user2Id, adId = null, metadata = null) {
     try {
       // Sort user IDs to ensure consistent conversation lookup
       const participants = [user1Id, user2Id].sort();
       
-      // Check if conversation already exists
-      const existingConversation = await this.conversationsCollection
-        .where('participants', '==', participants)
-        .limit(1)
-        .get();
+      // Extract offerId from metadata if it exists
+      const offerId = metadata?.offerId || null;
       
-      if (!existingConversation.empty) {
-        return existingConversation.docs[0].id;
+      // Check if conversation already exists
+      let existingConversationQuery = this.conversationsCollection
+        .where('participants', '==', participants);
+      
+      const existingConversationSnapshot = await existingConversationQuery.get();
+      
+      // Find the conversation that matches both participants and the offer ID (if any)
+      let existingConversation = null;
+      if (!existingConversationSnapshot.empty) {
+        existingConversation = existingConversationSnapshot.docs.find(doc => {
+          const data = doc.data();
+          
+          if (offerId) {
+            // For specific offer conversations, match the offer ID
+            return (data.metadata && data.metadata.offerId === offerId) || 
+                   (data.offerId === offerId);
+          } else {
+            // For general conversations, ensure there's no offer ID attached
+            return (!data.metadata || !data.metadata.offerId) && !data.offerId;
+          }
+        });
+      }
+      
+      if (existingConversation) {
+        return existingConversation.id;
       }
       
       // Create a new conversation
@@ -44,7 +65,8 @@ class MessagingService {
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         lastMessage: null,
-        adId
+        adId,
+        metadata
       };
       
       const conversationRef = await this.conversationsCollection.add(conversationData);

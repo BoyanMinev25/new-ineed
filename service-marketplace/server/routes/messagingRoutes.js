@@ -12,14 +12,14 @@ router.use(authMiddleware);
  */
 router.post('/conversations', async (req, res) => {
   try {
-    const { otherUserId, adId } = req.body;
+    const { otherUserId, adId, metadata } = req.body;
     const userId = req.user.uid;
     
     if (!otherUserId) {
       return res.status(400).json({ error: 'Other user ID is required' });
     }
     
-    const conversationId = await messagingService.createConversation(userId, otherUserId, adId);
+    const conversationId = await messagingService.createConversation(userId, otherUserId, adId, metadata);
     res.status(201).json({ conversationId });
   } catch (error) {
     console.error('Error creating conversation:', error);

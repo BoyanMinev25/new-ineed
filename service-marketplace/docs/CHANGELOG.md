@@ -7,6 +7,14 @@ All notable changes to the Service Marketplace application will be documented in
 ### Added
 - Enhanced security measures for user data protection
 - Testing infrastructure for all components
+- Improved ad detail page with user information display
+  - User profile badge showing first name, completed jobs, and rating
+  - Detailed user activity modal with timeline
+  - Trust indicators for service providers to evaluate requesters
+- Comprehensive design system documentation
+  - UI component patterns and examples
+  - Color palette and typography guidelines
+  - Layout principles and best practices
 
 ## [0.2.0] - Real-time Features & Content Moderation
 

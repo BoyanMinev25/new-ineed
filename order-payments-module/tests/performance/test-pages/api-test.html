@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Performance Tests</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    #api-test-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .test-controls {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    .api-endpoint {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .results {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+    }
+    .response-display {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      font-family: monospace;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+    .metric {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="api-test-container">
+    <h1>API Performance Tests</h1>
+    
+    <div class="test-controls">
+      <h2>Test Controls</h2>
+      <button id="run-all-tests">Run All Tests</button>
+      <button id="clear-results">Clear Results</button>
+    </div>
+    
+    <div class="api-endpoints">
+      <h2>API Endpoints</h2>
+      
+      <div class="api-endpoint" id="getOrders">
+        <h3>Get Orders</h3>
+        <div class="endpoint-controls">
+          <label for="getOrders-count">Order Count:</label>
+          <input type="number" id="getOrders-count" value="10" min="1" max="1000">
+          <button class="test-button" data-endpoint="getOrders">Test Endpoint</button>
+        </div>
+        <div class="response-display" id="getOrders-response"></div>
+      </div>
+      
+      <div class="api-endpoint" id="getOrderDetails">
+        <h3>Get Order Details</h3>
+        <div class="endpoint-controls">
+          <label for="getOrderDetails-id">Order ID:</label>
+          <input type="text" id="getOrderDetails-id" value="123">
+          <button class="test-button" data-endpoint="getOrderDetails">Test Endpoint</button>
+        </div>
+        <div class="response-display" id="getOrderDetails-response"></div>
+      </div>
+      
+      <div class="api-endpoint" id="createPaymentIntent">
+        <h3>Create Payment Intent</h3>
+        <div class="endpoint-controls">
+          <label for="createPaymentIntent-amount">Amount:</label>
+          <input type="number" id="createPaymentIntent-amount" value="1000" min="1">
+          <button class="test-button" data-endpoint="createPaymentIntent">Test Endpoint</button>
+        </div>
+        <div class="response-display" id="createPaymentIntent-response"></div>
+      </div>
+      
+      <div class="api-endpoint" id="confirmPayment">
+        <h3>Confirm Payment</h3>
+        <div class="endpoint-controls">
+          <label for="confirmPayment-id">Payment Intent ID:</label>
+          <input type="text" id="confirmPayment-id" value="pi_mock_123">
+          <button class="test-button" data-endpoint="confirmPayment">Test Endpoint</button>
+        </div>
+        <div class="response-display" id="confirmPayment-response"></div>
+      </div>
+      
+      <div class="api-endpoint" id="uploadDeliveryFile">
+        <h3>Upload Delivery File</h3>
+        <div class="endpoint-controls">
+          <button class="test-button" data-endpoint="uploadDeliveryFile">Test Endpoint</button>
+        </div>
+        <div class="response-display" id="uploadDeliveryFile-response"></div>
+      </div>
+    </div>
+    
+    <div class="results" id="results">
+      <h2>Test Results</h2>
+      <div id="metrics"></div>
+    </div>
+  </div>
+
+  <script>
+    // API test utilities
+    const ApiTestUtils = {
+      // Test endpoints
+      endpoints: {
+        getOrders: {
+          method: 'GET',
+          url: '/api/orders',
+          getParams: () => {
+            const count = document.getElementById('getOrders-count').value;
+            return { count };
+          }
+        },
+        getOrderDetails: {
+          method: 'GET',
+          url: '/api/orders/:id',
+          getParams: () => {
+            const id = document.getElementById('getOrderDetails-id').value;
+            return { id };
+          }
+        },
+        createPaymentIntent: {
+          method: 'POST',
+          url: '/api/payment/create-intent',
+          getParams: () => {
+            const amount = parseInt(document.getElementById('createPaymentIntent-amount').value);
+            return { 
+              orderId: `order_${Date.now()}`,
+              amount 
+            };
+          }
+        },
+        confirmPayment: {
+          method: 'POST',
+          url: '/api/payment/confirm',
+          getParams: () => {
+            const paymentIntentId = document.getElementById('confirmPayment-id').value;
+            return { paymentIntentId };
+          }
+        },
+        uploadDeliveryFile: {
+          method: 'POST',
+          url: '/api/delivery/upload',
+          getParams: () => {
+            // Simulate file data
+            return { 
+              orderId: `order_${Date.now()}`,
+              fileName: 'delivery_note.pdf',
+              fileType: 'application/pdf',
+              fileSize: 1024 * 1024 // 1MB
+            };
+          }
+        }
+      },
+      
+      // Make API request and measure performance
+      testEndpoint: async function(endpointName) {
+        const endpoint = this.endpoints[endpointName];
+        if (!endpoint) {
+          console.error(`Endpoint ${endpointName} not found!`);
+          return null;
+        }
+        
+        const params = endpoint.getParams();
+        const responseEl = document.getElementById(`${endpointName}-response`);
+        
+        try {
+          // Clear previous response
+          responseEl.textContent = 'Loading...';
+          
+          // Build URL with params for GET requests
+          let url = endpoint.url;
+          
+          // Replace route parameters
+          if (url.includes(':id') && params.id) {
+            url = url.replace(':id', params.id);
+          }
+          
+          // Add query params for GET requests
+          if (endpoint.method === 'GET') {
+            const queryParams = new URLSearchParams();
+            for (const [key, value] of Object.entries(params)) {
+              if (key !== 'id') { // Skip 'id' as it's already in the URL
+                queryParams.append(key, value);
+              }
+            }
+            
+            if (queryParams.toString()) {
+              url = `${url}?${queryParams.toString()}`;
+            }
+          }
+          
+          // Prepare request options
+          const options = {
+            method: endpoint.method,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          };
+          
+          // Add body for POST requests
+          if (endpoint.method === 'POST') {
+            options.body = JSON.stringify(params);
+          }
+          
+          // Start timing
+          const startTime = performance.now();
+          
+          // Make request
+          const response = await fetch(url, options);
+          const data = await response.json();
+          
+          // End timing
+          const endTime = performance.now();
+          
+          // Calculate response time
+          const responseTime = endTime - startTime;
+          
+          // Display response
+          responseEl.textContent = JSON.stringify(data, null, 2);
+          
+          // Return metrics
+          return {
+            statusCode: response.status,
+            responseTime,
+            dataSize: JSON.stringify(data).length
+          };
+          
+        } catch (error) {
+          console.error(`Error testing endpoint ${endpointName}:`, error);
+          responseEl.textContent = `Error: ${error.message}`;
+          return null;
+        }
+      }
+    };
+    
+    // Run API test
+    window.runApiTest = async function(endpointName) {
+      console.log(`Running API test for ${endpointName}...`);
+      
+      // Clear previous test results
+      document.getElementById('metrics').innerHTML = '';
+      
+      // Run multiple iterations and get average
+      const iterations = 3;
+      let totalResponseTime = 0;
+      let successfulTests = 0;
+      
+      for (let i = 0; i < iterations; i++) {
+        const result = await ApiTestUtils.testEndpoint(endpointName);
+        
+        if (result) {
+          totalResponseTime += result.responseTime;
+          successfulTests++;
+        }
+      }
+      
+      // Calculate average response time
+      const averageResponseTime = successfulTests > 0 ? totalResponseTime / successfulTests : 0;
+      
+      // Display results
+      const metricsContainer = document.getElementById('metrics');
+      
+      const metricsHTML = `
+        <div class="metric">
+          <strong>Endpoint:</strong> ${endpointName}
+        </div>
+        <div class="metric">
+          <strong>Method:</strong> ${ApiTestUtils.endpoints[endpointName]?.method || 'Unknown'}
+        </div>
+        <div class="metric">
+          <strong>URL:</strong> ${ApiTestUtils.endpoints[endpointName]?.url || 'Unknown'}
+        </div>
+        <div class="metric">
+          <strong>Average Response Time:</strong> ${averageResponseTime.toFixed(2)} ms
+        </div>
+        <div class="metric">
+          <strong>Test Iterations:</strong> ${iterations} (${successfulTests} successful)
+        </div>
+      `;
+      
+      metricsContainer.innerHTML += metricsHTML;
+      
+      // Return metrics
+      return {
+        responseTime: averageResponseTime
+      };
+    };
+    
+    // Initialize event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set up test buttons
+      const testButtons = document.querySelectorAll('.test-button');
+      testButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+          const endpointName = this.getAttribute('data-endpoint');
+          await window.runApiTest(endpointName);
+        });
+      });
+      
+      // Run all tests button
+      document.getElementById('run-all-tests').addEventListener('click', async function() {
+        const endpointNames = Object.keys(ApiTestUtils.endpoints);
+        
+        for (const endpointName of endpointNames) {
+          await window.runApiTest(endpointName);
+        }
+      });
+      
+      // Clear results button
+      document.getElementById('clear-results').addEventListener('click', function() {
+        document.getElementById('metrics').innerHTML = '';
+        
+        // Clear all response displays
+        document.querySelectorAll('.response-display').forEach(el => {
+          el.textContent = '';
+        });
+      });
+    });
+  </script>
+</body>
+</html> 

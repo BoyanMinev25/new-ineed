@@ -1,0 +1,56 @@
+@import '../responsive';
+
+.paginated-orders-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 50vh;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.paginated-orders-list {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  min-height: 200px;
+}
+
+.paginated-orders-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #6b7280;
+  
+  .loader {
+    margin-bottom: 1rem;
+  }
+}
+
+.paginated-orders-footer {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  
+  @include respond-to(md) {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.paginated-orders-count {
+  color: #6b7280;
+  font-size: 0.875rem;
+  text-align: center;
+  
+  @include respond-to(md) {
+    text-align: left;
+  }
+} 
