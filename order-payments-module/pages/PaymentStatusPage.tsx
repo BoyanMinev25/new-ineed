@@ -238,27 +238,7 @@ const PaymentStatusPage: React.FC<PaymentStatusPageProps> = ({
 
 // Default implementation for fetchOrderById
 async function defaultFetchOrderById(orderId: string): Promise<any> {
-  // This would be replaced by a real API call in the implementation
-  console.log(`Fetching order details for ${orderId}`);
-  
-  // Mock response delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  // Mock order details
-  return {
-    id: orderId,
-    title: 'Sample Service',
-    status: 'pending',
-    paymentStatus: 'completed',
-    createdAt: new Date(),
-    price: {
-      subtotal: 100,
-      fees: 20,
-      taxes: 10,
-      total: 130,
-      currency: 'USD'
-    }
-  };
+  throw new Error(`No fetchOrderById implementation provided for order ID ${orderId}`);
 }
 
 export default PaymentStatusPage; 

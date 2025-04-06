@@ -58,70 +58,16 @@ interface OrderMessage {
   isRead: boolean;
 }
 
-// Mock messaging functions for pre-order conversations
+// Pre-order messaging functions
 const usePreOrderMessaging = (conversationId: string) => {
   const [messages, setMessages] = useState<OrderMessage[]>([]);
   
-  // Fetch mock conversation messages
-  useEffect(() => {
-    const fetchConversationMessages = async () => {
-      // In a real implementation, this would call an API to fetch conversation messages
-      // For now, we'll use mock data
-      
-      // Simulate loading delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Mock messages
-      const mockMessages: OrderMessage[] = [
-        {
-          id: 'msg1',
-          senderId: 'system',
-          senderName: 'System',
-          senderRole: 'seller',
-          content: 'Conversation started. You can now discuss the details of this offer.',
-          timestamp: new Date(Date.now() - 60000 * 30), // 30 minutes ago
-          isRead: true
-        }
-      ];
-      
-      setMessages(mockMessages);
-    };
-    
-    fetchConversationMessages();
-  }, [conversationId]);
-  
   const sendMessage = async (content: string, attachments: File[] = []): Promise<void> => {
-    // In a real implementation, this would send a message to the messaging API
-    // For now, we'll just add it to our local state
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    const newMessage: OrderMessage = {
-      id: `msg${Date.now()}`,
-      senderId: 'current-user',
-      senderName: 'You',
-      senderRole: 'buyer', // This would be dynamically set based on the current user
-      content,
-      timestamp: new Date(),
-      attachmentFiles: attachments.map(file => ({
-        id: `file_${Math.random().toString(36).substring(2)}`,
-        name: file.name,
-        size: file.size,
-        type: file.type
-      })),
-      isRead: true
-    };
-    
-    setMessages(prev => [...prev, newMessage]);
+    throw new Error('Pre-order messaging not implemented');
   };
   
   const markMessageAsRead = async (messageId: string): Promise<void> => {
-    // In a real implementation, this would mark the message as read in the API
-    // For now, we'll just update our local state
-    setMessages(prev => prev.map(msg => 
-      msg.id === messageId ? { ...msg, isRead: true } : msg
-    ));
+    throw new Error('Pre-order messaging not implemented');
   };
   
   return {
@@ -247,9 +193,6 @@ const OrderMessagePanel: React.FC<OrderMessagePanelProps> = ({
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [combinedMessages]);
 
-  // Log context when component renders
-  console.log('OrderMessagePanel Render - ordersContext:', ordersContext);
-
   const handleSendMessage = async () => {
     if (newMessage.trim() === '' && attachments.length === 0) return;
     
@@ -270,7 +213,7 @@ const OrderMessagePanel: React.FC<OrderMessagePanelProps> = ({
       setNewMessage('');
       setAttachments([]);
     } catch (error) {
-      console.error('Error sending message:', error);
+      // Error handling without logging
     } finally {
       setIsSending(false);
     }
@@ -337,10 +280,6 @@ const OrderMessagePanel: React.FC<OrderMessagePanelProps> = ({
   };
 
   const handleOrderCreated = (orderId: string) => {
-    // Log context and function when handleOrderCreated is called
-    console.log('handleOrderCreated - ordersContext:', ordersContext);
-    console.log('handleOrderCreated - typeof sendOrderMessage:', typeof ordersContext?.sendOrderMessage);
-    
     setShowCreateOrderModal(false);
     
     // Send a message in the chat indicating that an order was created

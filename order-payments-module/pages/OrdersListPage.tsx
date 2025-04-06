@@ -63,44 +63,22 @@ const OrdersListPage: React.FC<OrdersListPageProps> = () => {
     fetchOrders 
   } = useOrders();
   
-  console.log('OrdersListPage: Initialized with context data:', { 
-    ordersCount: orders?.length || 0,
-    buyerOrdersCount: buyerOrders?.length || 0, 
-    sellerOrdersCount: sellerOrders?.length || 0,
-    loading,
-    error
-  });
-
   // Check auth status on mount
   useEffect(() => {
-    // Log the current auth state for debugging
+    // Check if user is authenticated
     const userId = orderPaymentsAuth.getCurrentUserRoleId();
-    console.log('OrdersListPage: Auth check on mount -', 
-      'userId:', userId,
-      'isAuthenticated:', orderPaymentsAuth.isAuthenticated,
-      'hasCurrentUser:', !!orderPaymentsAuth.currentUser
-    );
   }, []);
 
   // Fetch orders when component mounts
   useEffect(() => {
-    console.log('OrdersListPage: Fetching orders...');
     // Force a fresh fetch every time this component mounts 
     fetchOrders();
   }, [fetchOrders]); // Include fetchOrders in the dependency array to avoid lint warnings
 
   // Handle manual retry
   const handleRetry = () => {
-    console.log('OrdersListPage: Manual retry initiated');
     setRetryCount(prev => prev + 1);
     setRetryInProgress(true);
-    
-    // Check auth status before retry
-    const userId = orderPaymentsAuth.getCurrentUserRoleId();
-    console.log('OrdersListPage: Auth status before retry -', 
-      'userId:', userId,
-      'isAuthenticated:', orderPaymentsAuth.isAuthenticated
-    );
     
     // Try to fetch orders again
     fetchOrders().finally(() => {
@@ -118,16 +96,11 @@ const OrdersListPage: React.FC<OrdersListPageProps> = () => {
 
   // Use the context's filtered orders based on the active tab and adapt them to the local Order interface
   const adaptOrders = (ordersData: any[]): Order[] => {
-    console.log('OrdersListPage: Adapting raw orders data:', ordersData);
-    
     if (!ordersData || ordersData.length === 0) {
-      console.log('OrdersListPage: No orders data to adapt');
       return [];
     }
     
     return ordersData.map(order => {
-      console.log('OrdersListPage: Adapting order:', order);
-      
       // Check if we have a Firestore timestamp object and convert if needed
       let createdAt = order.createdAt;
       if (createdAt && typeof createdAt === 'object' && createdAt.seconds) {
@@ -152,7 +125,6 @@ const OrdersListPage: React.FC<OrdersListPageProps> = () => {
         role: order.role || ''
       };
       
-      console.log('OrdersListPage: Adapted order:', adaptedOrder);
       return adaptedOrder;
     });
   };

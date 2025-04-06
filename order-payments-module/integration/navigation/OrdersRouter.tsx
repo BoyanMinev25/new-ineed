@@ -42,16 +42,13 @@ const getCurrentUserId = (): string | null => {
  * This component is designed to be embedded within the main application's router.
  */
 const OrdersRouter: React.FC = () => {
-  // Log when the router is mounted
+  // Initialize auth when the router is mounted
   useEffect(() => {
-    console.log('OrdersRouter: Mounted with OrdersProvider');
-    
     // Initialize auth by explicitly creating a wrapper around Firebase auth
     // This ensures orderPaymentsAuth has direct access to Firebase auth
     const initializeOrderPaymentsAuth = () => {
       // Check if Firebase is initialized and a user is signed in
       if (firebase.apps.length && firebase.auth().currentUser) {
-        console.log('OrdersRouter: Firebase user found, initializing orderPaymentsAuth');
         const firebaseUser = firebase.auth().currentUser;
         
         // Create auth context that directly uses Firebase
@@ -85,13 +82,6 @@ const OrdersRouter: React.FC = () => {
             if (user) await user.getIdToken(true);
           },
         });
-        
-        // Only log if firebaseUser is not null
-        if (firebaseUser) {
-          console.log('OrdersRouter: Successfully initialized auth with Firebase user:', firebaseUser.uid);
-        }
-      } else {
-        console.log('OrdersRouter: Firebase auth not ready or user not signed in');
       }
     };
     
@@ -100,23 +90,10 @@ const OrdersRouter: React.FC = () => {
     
     // Also set up a listener for auth state changes
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      console.log('OrdersRouter: Firebase auth state changed:', user ? 'signed in' : 'signed out');
       if (user) {
         // Re-initialize auth when user signs in
         initializeOrderPaymentsAuth();
       }
-    });
-    
-    const userId = getCurrentUserId();
-    console.log('OrdersRouter: Rendering with user ID:', userId || 'not authenticated');
-    
-    // Check if the orderPaymentsAuth is properly initialized
-    console.log('OrdersRouter: Current auth status:', {
-      isAuthenticated: orderPaymentsAuth.isAuthenticated,
-      hasCurrentUser: !!orderPaymentsAuth.currentUser,
-      currentUserData: orderPaymentsAuth.currentUser 
-        ? { uid: orderPaymentsAuth.currentUser.uid, role: orderPaymentsAuth.currentUser.role } 
-        : null
     });
     
     // Check if we're running in the browser environment
@@ -134,8 +111,6 @@ const OrdersRouter: React.FC = () => {
           input.includes('/orders') || 
           input.includes('/api/')
         )) {
-          console.log('OrdersRouter: Intercepting fetch call to:', input);
-          
           // Initialize headers if they don't exist
           if (!modifiedInit.headers) {
             modifiedInit.headers = {};
@@ -158,28 +133,17 @@ const OrdersRouter: React.FC = () => {
           
           // Add user-id header if we have a userId and it's not already set
           if (userId && !headers['user-id']) {
-            console.log('OrdersRouter: Adding user-id header to fetch request:', userId);
             headers['user-id'] = userId;
             // Also add it in alternate formats that the server might check
             headers['userId'] = userId;
             headers['userid'] = userId;
             headers['uid'] = userId;  // Add uid format that matches Firebase field name
-          } else if (!userId) {
-            console.log('OrdersRouter: No authenticated user ID available for request');
-            console.log('OrdersRouter: Auth debug -', 
-              'isAuthenticated:', orderPaymentsAuth.isAuthenticated,
-              'currentUser:', orderPaymentsAuth.currentUser ? 'exists' : 'null'
-            );
           }
-          
-          console.log('OrdersRouter: Modified fetch headers:', headers);
         }
         
         // Call the original fetch with modified init
         return originalFetch.call(window, input, modifiedInit);
       };
-      
-      console.log('OrdersRouter: Installed fetch interceptor');
     }
     
     // Clean up auth listener when component unmounts

@@ -402,38 +402,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
 // Default implementations for required props
 async function defaultFetchAdDetails(adId: string): Promise<any> {
-  // This would be replaced by a real API call in the implementation
-  console.log(`Fetching ad details for ${adId}`);
-  
-  // Mock response delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  // Mock ad details
-  return {
-    id: adId,
-    title: 'Sample Service',
-    description: 'This is a sample service description',
-    price: 100,
-    currency: 'USD',
-    userId: 'seller123'
-  };
+  throw new Error(`No fetchAdDetails implementation provided for ad ID ${adId}`);
 }
 
 async function defaultCreateOrderFromAd(adId: string, details: any): Promise<any> {
-  // This would be replaced by a real API call in the implementation
-  console.log(`Creating order for ad ${adId}`, details);
-  
-  // Mock response delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Mock order response
-  return {
-    id: `order_${Math.random().toString(36).substring(7)}`,
-    adId,
-    status: 'pending',
-    paymentStatus: 'pending',
-    ...details
-  };
+  throw new Error(`No createOrderFromAd implementation provided for ad ID ${adId}`);
 }
 
 export default CheckoutPage; 

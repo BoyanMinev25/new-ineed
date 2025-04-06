@@ -16,8 +16,7 @@ export async function createOrder(orderData: Omit<Order, 'id' | 'status' | 'crea
   // Will generate an ID, set initial status, and timestamps
   // Will also create an initial OrderEvent for the timeline
   
-  // Implementation will be added later
-  throw new Error('Not implemented');
+  throw new Error('Order creation is not implemented yet');
 }
 
 /**
@@ -26,8 +25,7 @@ export async function createOrder(orderData: Omit<Order, 'id' | 'status' | 'crea
 export async function getOrderById(orderId: string): Promise<Order> {
   // Will fetch order from Firestore
   
-  // Implementation will be added later
-  throw new Error('Not implemented');
+  throw new Error(`Order retrieval for ID ${orderId} is not implemented yet`);
 }
 
 /**
@@ -42,8 +40,7 @@ export async function updateOrderStatus(
   // Will update order status and create an OrderEvent
   // Will also trigger notifications via Firebase Cloud Messaging
   
-  // Implementation will be added later
-  throw new Error('Not implemented');
+  throw new Error(`Status update for order ${orderId} is not implemented yet`);
 }
 
 /**
@@ -62,8 +59,7 @@ export async function listUserOrders(
 ): Promise<Order[]> {
   // Will query Firestore for orders matching the criteria
   
-  // Implementation will be added later
-  throw new Error('Not implemented');
+  throw new Error(`Listing orders for user ${userId} as ${role} is not implemented yet`);
 }
 
 /**
@@ -77,8 +73,7 @@ export async function addOrderDelivery(
   // Will also update the order status to DELIVERED
   // Will handle file uploads to Firebase Storage
   
-  // Implementation will be added later
-  throw new Error('Not implemented');
+  throw new Error(`Adding delivery to order ${orderId} is not implemented yet`);
 }
 
 /**
@@ -87,8 +82,7 @@ export async function addOrderDelivery(
 export async function getOrderTimeline(orderId: string): Promise<OrderEvent[]> {
   // Will fetch all events for this order, sorted by timestamp
   
-  // Implementation will be added later
-  throw new Error('Not implemented');
+  throw new Error(`Order timeline retrieval for order ${orderId} is not implemented yet`);
 }
 
 /**
@@ -102,6 +96,5 @@ export async function cancelOrder(
   // Will update order status to CANCELLED
   // Will handle payment refund via Stripe if applicable
   
-  // Implementation will be added later
-  throw new Error('Not implemented');
+  throw new Error(`Order cancellation for order ${orderId} is not implemented yet`);
 } 

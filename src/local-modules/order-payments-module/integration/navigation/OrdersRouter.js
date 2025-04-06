@@ -14,16 +14,6 @@ const callApi = async (endpoint, options = {}) => {
   const timestamp = new Date().getTime();
   const fullUrl = `${url}${url.includes('?') ? '&' : '?'}_t=${timestamp}`;
   
-  console.log(`🔍 Making API request to: ${fullUrl}`);
-  console.log(`🔍 Window location:`, {
-    origin: window.location.origin,
-    host: window.location.host,
-    hostname: window.location.hostname,
-    port: window.location.port,
-    pathname: window.location.pathname,
-    protocol: window.location.protocol
-  });
-  
   // Create a promise wrapper around XMLHttpRequest
   return new Promise((resolve, reject) => {
     // Initialize a new XMLHttpRequest
@@ -52,9 +42,6 @@ const callApi = async (endpoint, options = {}) => {
     
     // Handle successful response
     xhr.onload = function() {
-      console.log(`API Response received, status: ${xhr.status}`);
-      console.log(`Response type: ${xhr.getResponseHeader('content-type')}`);
-      
       // Check if response is JSON
       const contentType = xhr.getResponseHeader('content-type');
       if (contentType && contentType.includes('application/json')) {
@@ -67,11 +54,7 @@ const callApi = async (endpoint, options = {}) => {
       } else {
         // Check if we got HTML instead of JSON
         if (xhr.responseText.includes('<!DOCTYPE html>') || xhr.responseText.includes('<html>')) {
-          console.error('⚠️ Received HTML instead of JSON:', xhr.responseText.substring(0, 500) + '...');
-          
           // Try to fallback to direct API call
-          console.log('Attempting direct API call as fallback...');
-          
           // Create a direct API URL bypassing the SPA
           const directApiUrl = `http://localhost:5002${fullUrl}`;
           const directXhr = new XMLHttpRequest();
@@ -92,16 +75,12 @@ const callApi = async (endpoint, options = {}) => {
                 reject(new Error('Failed to parse JSON from direct API call'));
               }
             } else {
-              // If direct API call also fails, return mock data
-              console.error('⚠️ Direct API call also failed to return JSON. Using mock data.');
-              resolve(getMockData(endpoint));
+              reject(new Error('API unavailable: Could not retrieve data from server'));
             }
           };
           
           directXhr.onerror = function() {
-            console.error('⚠️ Direct API call failed:', directXhr.statusText);
-            // Return mock data as last resort
-            resolve(getMockData(endpoint));
+            reject(new Error('API unavailable: Could not connect to server'));
           };
           
           // Send the direct request
@@ -114,11 +93,8 @@ const callApi = async (endpoint, options = {}) => {
     
     // Handle network errors
     xhr.onerror = function() {
-      console.error('❌ Network error occurred:', xhr.statusText);
-      
       // Try direct API call as fallback
       const directApiUrl = `http://localhost:5002${fullUrl}`;
-      console.log('Attempting direct API call as fallback after network error:', directApiUrl);
       
       const directXhr = new XMLHttpRequest();
       directXhr.open(options.method || 'GET', directApiUrl, true);
@@ -136,16 +112,12 @@ const callApi = async (endpoint, options = {}) => {
             reject(new Error('Failed to parse JSON from direct API call'));
           }
         } else {
-          // If direct API call also fails, return mock data
-          console.error('⚠️ Direct API call also failed after network error. Using mock data.');
-          resolve(getMockData(endpoint));
+          reject(new Error('API unavailable: Could not retrieve data from server'));
         }
       };
       
       directXhr.onerror = function() {
-        console.error('⚠️ Direct API call failed after network error:', directXhr.statusText);
-        // Return mock data as last resort
-        resolve(getMockData(endpoint));
+        reject(new Error('API unavailable: Could not connect to server'));
       };
       
       // Send the direct request
@@ -155,62 +127,6 @@ const callApi = async (endpoint, options = {}) => {
     // Send the request
     xhr.send(options.body ? JSON.stringify(options.body) : null);
   });
-};
-
-// Helper function to get mock data
-const getMockData = (endpoint) => {
-  console.log('Using mock data for endpoint:', endpoint);
-  
-  // Mock data for different endpoints
-  if (endpoint === '/health') {
-    return { status: 'ok', message: 'Mock API health check succeeded', timestamp: new Date().toISOString() };
-  } else if (endpoint.includes('/orders/') && !endpoint.includes('/api/orders/')) {
-    // Single order detail - ensure endpoint paths are consistent
-    const orderId = endpoint.split('/').pop();
-    return {
-      id: orderId,
-      status: 'In Progress',
-      amount: 1250.00,
-      description: 'Service Description (Mock Order API - API Unavailable)',
-      serviceType: 'Service Type',
-      sellerName: 'Service Provider Name',
-      createdAt: new Date().toISOString(),
-      buyerId: 'user-123',
-      sellerId: 'user-456',
-      buyerName: 'Client Name',
-      role: 'buyer'
-    };
-  } else {
-    // Orders list
-    return [
-      {
-        id: 'mock-integration-12345',
-        status: 'In Progress',
-        amount: 1250.00,
-        description: 'First Service (Mock Order API - API Unavailable)',
-        serviceType: 'Service Type A',
-        sellerName: 'Provider A',
-        createdAt: new Date().toISOString(),
-        buyerId: 'user-123',
-        sellerId: 'user-456',
-        buyerName: 'Client',
-        role: 'buyer'
-      },
-      {
-        id: 'mock-integration-67890',
-        status: 'Completed',
-        amount: 350.00,
-        description: 'Second Service (Mock Order API - API Unavailable)',
-        serviceType: 'Service Type B',
-        sellerName: 'Provider B',
-        createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-        buyerId: 'user-123',
-        sellerId: 'user-789',
-        buyerName: 'Client',
-        role: 'buyer'
-      }
-    ];
-  }
 };
 
 /**
@@ -242,60 +158,22 @@ const OrdersRouter = () => {
             setServerStatus('error');
           }
         } catch (err) {
-          console.error('Server health check failed:', err);
           setServerStatus('not-running');
         }
       };
       
       checkServerStatus();
     }, []);
-
-    // Fetch orders from API
+    
+    // Fetch orders when component mounts
     useEffect(() => {
       const fetchOrders = async () => {
         try {
-          setLoading(true);
-          console.log('Fetching orders from API...');
-          
-          // Use the callApi helper with correct API path
           const data = await callApi('/api/orders');
-          console.log('Successfully fetched orders:', data);
           setOrders(data);
-          setError(null);
+          setLoading(false);
         } catch (err) {
-          console.error('❌ Error fetching orders:', err);
-          setError(err.message);
-          
-          // Fallback to mock data in case of API error
-          setOrders([
-            {
-              id: '12345',
-              status: 'In Progress',
-              amount: 1250.00,
-              description: 'AC Replacement Service',
-              serviceType: 'AC Replacement',
-              sellerName: 'AC Services Inc.',
-              createdAt: new Date().toISOString(),
-              buyerId: 'user-123',
-              sellerId: 'user-456',
-              buyerName: 'John Doe',
-              role: 'buyer'
-            },
-            {
-              id: '12346',
-              status: 'Completed',
-              amount: 350.00,
-              description: 'Plumbing repair services',
-              serviceType: 'Plumbing Repair',
-              sellerName: 'Reliable Plumbing Co.',
-              createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-              buyerId: 'user-123',
-              sellerId: 'user-789',
-              buyerName: 'John Doe',
-              role: 'buyer'
-            }
-          ]);
-        } finally {
+          setError('Failed to load orders. Please try again.');
           setLoading(false);
         }
       };
@@ -418,7 +296,6 @@ const OrdersRouter = () => {
               onActionClick: handleOrderClick 
             });
           } catch (error) {
-            console.error('Error rendering OrderDetailCard:', error);
             // Fallback UI for individual card errors
             return React.createElement(
               'div',
@@ -489,23 +366,8 @@ const OrdersRouter = () => {
           setOrder(data);
           setError(null);
         } catch (err) {
-          console.error(`Error fetching order ${orderId}:`, err);
-          setError(err.message);
-          
-          // Fallback mock data
-          setOrder({
-            id: orderId,
-            status: 'In Progress',
-            amount: 1250.00,
-            description: 'Service Description (Mock Data)',
-            serviceType: 'Service Type',
-            sellerName: 'Service Provider Name',
-            createdAt: new Date().toISOString(),
-            buyerId: 'user-123',
-            sellerId: 'user-456',
-            buyerName: 'Client Name',
-            role: 'buyer'
-          });
+          setError(`Error fetching order: ${err.message}`);
+          setOrder(null);
         } finally {
           setLoading(false);
         }

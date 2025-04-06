@@ -37,12 +37,13 @@ interface Order {
   role: 'buyer' | 'seller';
 }
 
-// PageProps
 interface OrdersListPageProps {
-  // Optional props if needed for testing or flexibility
+  apiClient?: {
+    getOrders: () => Promise<Order[]>;
+  };
 }
 
-const OrdersListPage: React.FC<OrdersListPageProps> = () => {
+const OrdersListPage: React.FC<OrdersListPageProps> = ({ apiClient }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -50,44 +51,26 @@ const OrdersListPage: React.FC<OrdersListPageProps> = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // In a real implementation, this would fetch from your OrdersContext
-    // For demo purposes, we'll use mock data
     const fetchOrders = async () => {
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        setLoading(true);
+        setError(null);
         
-        // Mock data for display
-        const mockOrders: Order[] = [
-          {
-            id: 'order-123456',
-            status: 'pending',
-            createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-            amount: 150,
-            buyerId: 'user-123',
-            sellerId: 'user-456',
-            serviceType: 'Web Development',
-            buyerName: 'John Doe',
-            sellerName: 'Jane Smith',
-            role: 'buyer',
-            description: 'Website landing page design and development'
-          },
-          {
-            id: 'order-789012',
-            status: 'completed',
-            createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-            amount: 75,
-            buyerId: 'user-789',
-            sellerId: 'user-123',
-            serviceType: 'Logo Design',
-            buyerName: 'Bob Johnson',
-            sellerName: 'John Doe',
-            role: 'seller',
-            description: 'Modern minimalist logo for a coffee shop'
+        // Fetch orders from API client if provided
+        let orderData: Order[] = [];
+        if (apiClient && apiClient.getOrders) {
+          orderData = await apiClient.getOrders();
+        } else {
+          // Use fetch API as fallback
+          const response = await fetch('/api/orders');
+          if (!response.ok) {
+            throw new Error(`Failed to fetch orders: ${response.status} ${response.statusText}`);
           }
-        ];
+          const data = await response.json();
+          orderData = data.orders || data;
+        }
         
-        setOrders(mockOrders);
+        setOrders(orderData);
         setLoading(false);
       } catch (err) {
         setError('Failed to load orders. Please try again.');
@@ -96,7 +79,7 @@ const OrdersListPage: React.FC<OrdersListPageProps> = () => {
     };
     
     fetchOrders();
-  }, []);
+  }, [apiClient]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);

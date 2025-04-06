@@ -10,13 +10,17 @@ router.use(authMiddleware);
 router.get('/', async (req, res) => {
   try {
     const userId = req.user.uid; // Use authenticated user ID
-    console.log(`Fetching orders for user: ${userId}`);
-    // const orders = await orderService.getUserOrders(userId); // Use the service
-    // res.json(orders);
-    res.json([{ id: 'real-order-1', userId: userId, item: 'Placeholder Item' }]); // Placeholder
+    
+    // Service not implemented yet
+    return res.status(501).json({ 
+      error: 'Not implemented',
+      message: 'Order service is not available yet'
+    });
   } catch (error) {
-    console.error('Error fetching orders:', error);
-    res.status(500).json({ error: 'Failed to fetch orders' });
+    return res.status(500).json({ 
+      error: 'Failed to fetch orders',
+      message: error.message
+    });
   }
 });
 
@@ -25,16 +29,17 @@ router.get('/:orderId', async (req, res) => {
   try {
     const userId = req.user.uid;
     const { orderId } = req.params;
-    console.log(`Fetching order ${orderId} for user: ${userId}`);
-    // const order = await orderService.getOrderById(orderId, userId);
-    // if (!order) {
-    //   return res.status(404).json({ error: 'Order not found' });
-    // }
-    // res.json(order);
-    res.json({ id: orderId, userId: userId, item: 'Placeholder Specific Item' }); // Placeholder
+    
+    // Service not implemented yet
+    return res.status(501).json({ 
+      error: 'Not implemented',
+      message: 'Order service is not available yet'
+    });
   } catch (error) {
-    console.error(`Error fetching order ${req.params.orderId}:`, error);
-    res.status(500).json({ error: 'Failed to fetch order details' });
+    return res.status(500).json({ 
+      error: 'Failed to fetch order details',
+      message: error.message
+    });
   }
 });
 

@@ -29,8 +29,9 @@ import PaymentSummary from '../components/PaymentSummary';
 import DeliveryFileUploader from '../components/DeliveryFileUploader';
 import ReviewForm from '../components/ReviewForm';
 
-// Types and utils
+// Types, utils, and contexts
 import routes from '../integration/navigation/routes';
+import { useOrders } from '../../context/OrdersContext';
 
 // Define the interface for order data
 interface Order {
@@ -59,40 +60,55 @@ const OrderDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeStep, setActiveStep] = useState(0);
+  
+  // Get the orders context for fetching data
+  const { fetchOrderById } = useOrders();
 
   useEffect(() => {
-    // In a real implementation, this would fetch from your OrdersContext
-    // For demo purposes, we'll use mock data
     const fetchOrder = async () => {
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock data for display
-        const mockOrder: Order = {
-          id: orderId || 'order-123456',
-          status: 'in_progress',
-          createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-          amount: 150,
-          buyerId: 'user-123',
-          sellerId: 'user-456',
-          serviceType: 'Web Development',
-          buyerName: 'John Doe',
-          sellerName: 'Jane Smith',
-          role: 'buyer',
-          description: 'Website landing page design and development'
-        };
-        
-        setOrder(mockOrder);
+      if (!orderId) {
+        setError('Order ID is missing');
         setLoading(false);
+        return;
+      }
+      
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const data = await fetchOrderById(orderId);
+        
+        // Ensure data has all required Order fields
+        if (data) {
+          const orderData: Order = {
+            id: data.id || orderId,
+            status: data.status || 'pending',
+            createdAt: data.createdAt || new Date(),
+            amount: data.amount || data.price?.total || 0,
+            buyerId: data.buyerId || '',
+            sellerId: data.sellerId || '',
+            serviceType: data.serviceType || data.title || 'Service',
+            buyerName: data.buyerName || 'Client',
+            sellerName: data.sellerName || 'Provider',
+            role: data.role || 'buyer',
+            description: data.description || '',
+            deliveryFiles: data.deliveryFiles,
+            review: data.review
+          };
+          
+          setOrder(orderData);
+        } else {
+          setError('No order data found');
+        }
       } catch (err) {
         setError('Failed to load order details. Please try again.');
+      } finally {
         setLoading(false);
       }
     };
     
     fetchOrder();
-  }, [orderId]);
+  }, [orderId, fetchOrderById]);
 
   const handleBack = () => {
     navigate(routes.getOrdersListRoute());

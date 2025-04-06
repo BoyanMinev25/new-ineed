@@ -43,25 +43,7 @@ export async function sendUserNotification(
   userId: string,
   notification: NotificationPayload
 ): Promise<void> {
-  // In a real implementation, this would use Firebase Admin SDK:
-  // import * as admin from 'firebase-admin';
-  // await admin.messaging().sendToDevice(
-  //   userTokensSnapshot.docs.map(doc => doc.data().token),
-  //   {
-  //     notification: {
-  //       title: notification.title,
-  //       body: notification.body,
-  //       icon: notification.icon,
-  //       click_action: notification.clickAction
-  //     },
-  //     data: notification.data
-  //   }
-  // );
-  
-  // Placeholder implementation
-  console.log(`Sending notification to user ${userId}:`);
-  console.log(`Title: ${notification.title}`);
-  console.log(`Body: ${notification.body}`);
+  throw new Error(`Firebase Cloud Messaging notification service for user ${userId} is not implemented`);
 }
 
 /**
@@ -183,15 +165,7 @@ export async function registerDeviceToken(
   userId: string,
   token: string
 ): Promise<void> {
-  // In a real implementation, this would use Firestore:
-  // const db = getFirestore();
-  // await setDoc(doc(db, 'users', userId, 'tokens', token), {
-  //   token,
-  //   createdAt: new Date()
-  // });
-  
-  // Placeholder implementation
-  console.log(`Registering device token for user ${userId}: ${token}`);
+  throw new Error(`Firebase device token registration for user ${userId} is not implemented`);
 }
 
 /**
@@ -204,10 +178,5 @@ export async function unregisterDeviceToken(
   userId: string,
   token: string
 ): Promise<void> {
-  // In a real implementation, this would use Firestore:
-  // const db = getFirestore();
-  // await deleteDoc(doc(db, 'users', userId, 'tokens', token));
-  
-  // Placeholder implementation
-  console.log(`Unregistering device token for user ${userId}: ${token}`);
+  throw new Error(`Firebase device token unregistration for user ${userId} is not implemented`);
 } 

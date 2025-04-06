@@ -27,23 +27,7 @@ export async function uploadOrderFile(
   userId: string,
   fileType: string = 'delivery'
 ): Promise<UploadResult> {
-  // In a real implementation, this would use Firebase Storage:
-  // const storage = getStorage();
-  // const storageRef = ref(storage, `orders/${orderId}/${fileType}/${file.name}`);
-  // const snapshot = await uploadBytes(storageRef, file);
-  // const downloadURL = await getDownloadURL(snapshot.ref);
-  
-  // Placeholder implementation
-  console.log(`Uploading file ${file.name} for order ${orderId}`);
-  
-  // Mock successful upload
-  return {
-    fileName: file.name,
-    fileType: file.type,
-    fileUrl: `https://storage.example.com/orders/${orderId}/${fileType}/${file.name}`,
-    uploadedAt: new Date(),
-    path: `orders/${orderId}/${fileType}/${file.name}`
-  };
+  throw new Error('Firebase Storage not configured. Unable to upload file.');
 }
 
 /**
@@ -56,44 +40,7 @@ export async function listOrderFiles(
   orderId: string,
   fileType?: string
 ): Promise<UploadResult[]> {
-  // In a real implementation:
-  // const storage = getStorage();
-  // const storageRef = ref(storage, `orders/${orderId}${fileType ? `/${fileType}` : ''}`);
-  // const listResult = await listAll(storageRef);
-  // const files = await Promise.all(
-  //   listResult.items.map(async (itemRef) => {
-  //     const downloadURL = await getDownloadURL(itemRef);
-  //     const metadata = await getMetadata(itemRef);
-  //     return {
-  //       fileName: itemRef.name,
-  //       fileType: metadata.contentType || 'application/octet-stream',
-  //       fileUrl: downloadURL,
-  //       uploadedAt: new Date(metadata.timeCreated),
-  //       path: itemRef.fullPath
-  //     };
-  //   })
-  // );
-  
-  // Placeholder implementation
-  console.log(`Listing files for order ${orderId}${fileType ? ` of type ${fileType}` : ''}`);
-  
-  // Mock file list
-  return [
-    {
-      fileName: 'delivery1.pdf',
-      fileType: 'application/pdf',
-      fileUrl: `https://storage.example.com/orders/${orderId}/delivery/delivery1.pdf`,
-      uploadedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-      path: `orders/${orderId}/delivery/delivery1.pdf`
-    },
-    {
-      fileName: 'screenshot.png',
-      fileType: 'image/png',
-      fileUrl: `https://storage.example.com/orders/${orderId}/delivery/screenshot.png`,
-      uploadedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-      path: `orders/${orderId}/delivery/screenshot.png`
-    }
-  ];
+  throw new Error('Firebase Storage not configured. Unable to list order files.');
 }
 
 /**
@@ -102,13 +49,7 @@ export async function listOrderFiles(
  * @param filePath - The path to the file in storage
  */
 export async function deleteOrderFile(filePath: string): Promise<void> {
-  // In a real implementation:
-  // const storage = getStorage();
-  // const fileRef = ref(storage, filePath);
-  // await deleteObject(fileRef);
-  
-  // Placeholder implementation
-  console.log(`Deleting file at path: ${filePath}`);
+  throw new Error('Firebase Storage not configured. Unable to delete file.');
 }
 
 /**
@@ -117,16 +58,7 @@ export async function deleteOrderFile(filePath: string): Promise<void> {
  * @param filePath - The path to the file in storage
  */
 export async function getFileDownloadUrl(filePath: string): Promise<string> {
-  // In a real implementation:
-  // const storage = getStorage();
-  // const fileRef = ref(storage, filePath);
-  // return await getDownloadURL(fileRef);
-  
-  // Placeholder implementation
-  console.log(`Getting download URL for file: ${filePath}`);
-  
-  // Mock URL
-  return `https://storage.example.com/${filePath}?token=${Math.random().toString(36).substring(2)}`;
+  throw new Error('Firebase Storage not configured. Unable to get download URL.');
 }
 
 /**

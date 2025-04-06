@@ -78,11 +78,10 @@ export const OrdersProvider = ({ children }) => {
             setError(`Failed to fetch orders: ${err.message}`);
             console.error('Error fetching orders:', err);
             
-            // Mock data fallback for development
-            const mockOrders = generateMockOrders();
-            setOrders(mockOrders);
-            setBuyerOrders(mockOrders.filter(order => order.buyerId === 'current-user-id'));
-            setSellerOrders(mockOrders.filter(order => order.sellerId === 'current-user-id'));
+            // Reset orders state on error
+            setOrders([]);
+            setBuyerOrders([]);
+            setSellerOrders([]);
         } finally {
             setLoading(false);
         }
@@ -99,9 +98,7 @@ export const OrdersProvider = ({ children }) => {
         } catch (err) {
             setError(`Failed to fetch order: ${err.message}`);
             console.error(`Error fetching order ${orderId}:`, err);
-            
-            // Return mock data for development
-            return generateMockOrderById(orderId);
+            throw err;
         } finally {
             setLoading(false);
         }
@@ -209,15 +206,12 @@ export const OrdersProvider = ({ children }) => {
         catch (err) {
             setError(`Failed to create payment: ${err.message}`);
             console.error('Error creating payment:', err);
-            // Fallback to client-side generation for development only
-            const order = yield fetchOrderById(orderId);
-            const stripeResponse = yield createStripePaymentIntent(order.price.total * 100, order.price.currency, { orderId });
-            return stripeResponse;
+            throw err;
         }
         finally {
             setLoading(false);
         }
-    }), [fetchOrderById]);
+    }), []);
 
     // Confirm payment after successful processing
     const confirmPayment = useCallback((paymentIntentId, orderId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -541,67 +535,3 @@ export const OrdersProvider = ({ children }) => {
 
 // Hook to use the orders context
 export const useOrders = () => useContext(OrdersContext);
-
-// Helper function to generate mock orders data
-function generateMockOrders() {
-    return [
-        {
-            id: 'order-123456',
-            status: 'pending',
-            paymentStatus: 'awaiting_payment',
-            createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-            updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-            price: {
-                subtotal: 150,
-                fees: 15,
-                taxes: 10,
-                total: 175,
-                currency: 'USD'
-            },
-            buyerId: 'current-user-id',
-            sellerId: 'user-456',
-            title: 'Website landing page design',
-            description: 'Modern landing page for tech startup'
-        },
-        {
-            id: 'order-789012',
-            status: 'completed',
-            paymentStatus: 'paid',
-            createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-            updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-            price: {
-                subtotal: 75,
-                fees: 7.5,
-                taxes: 5,
-                total: 87.5,
-                currency: 'USD'
-            },
-            buyerId: 'user-789',
-            sellerId: 'current-user-id',
-            title: 'Logo Design',
-            description: 'Modern minimalist logo for a coffee shop'
-        }
-    ];
-}
-
-// Helper function to generate a mock order by ID
-function generateMockOrderById(orderId) {
-    return {
-        id: orderId,
-        status: 'in_progress',
-        paymentStatus: 'paid',
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-        updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-        price: {
-            subtotal: 250,
-            fees: 25,
-            taxes: 20,
-            total: 295,
-            currency: 'USD'
-        },
-        buyerId: 'current-user-id',
-        sellerId: 'provider-123',
-        title: 'Custom E-commerce Website',
-        description: 'Complete online store with payment integration'
-    };
-}

@@ -195,18 +195,16 @@ export const OrdersContext = createContext<OrdersContextInterface>(defaultContex
 // API URL
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002';
 
-// Get current user ID from authentication system
+// Get the current user ID from the auth integration
 const getCurrentUserId = (): string | null => {
   // Get the current user ID from the auth integration
   const userId = orderPaymentsAuth.getCurrentUserRoleId();
 
   if (userId) {
-    console.log('OrdersContext: Using authenticated user ID:', userId);
     return userId;
   }
   
   // If we can't get a user ID from auth, return null
-  console.log('OrdersContext: No authenticated user ID found');
   return null;
 };
 
@@ -222,7 +220,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
   
   // Update the user ID if authentication changes
   useEffect(() => {
-    console.log('OrdersContext: Setting up auth change listener');
     // Re-check the current user ID whenever the component mounts
     const userId = getCurrentUserId();
     setCurrentUserId(userId);
@@ -236,14 +233,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
       
       // If no user ID, throw an error - we shouldn't proceed with API calls
       if (!userId) {
-        console.error('OrdersContext: Authentication error - No user ID available for API call');
-        console.error('OrdersContext: Auth state:', {
-          isAuthenticated: orderPaymentsAuth.isAuthenticated,
-          hasCurrentUser: !!orderPaymentsAuth.currentUser,
-          currentUserDetails: orderPaymentsAuth.currentUser 
-            ? `uid: ${orderPaymentsAuth.currentUser.uid}, role: ${orderPaymentsAuth.currentUser.role}` 
-            : 'null'
-        });
         throw new Error('User is not authenticated');
       }
       
@@ -256,9 +245,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
         'userid': userId,    // Add alternate formats that the server might check
         'uid': userId       // Add uid format that matches Firebase field name
       };
-
-      console.log(`OrdersContext: API call to ${endpoint} with user-id: ${userId}`);
-      console.log('OrdersContext: Request headers:', headers);
       
       // Combine options with headers
       const mergedOptions = {
@@ -268,33 +254,14 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
           ...headers
         }
       };
-
-      // Add debugging
-      console.log(`OrdersContext: Final request options:`, mergedOptions);
       
       // Make the API call
       const response = await fetch(`${API_URL}${endpoint}`, mergedOptions);
       
-      // Log the response status
-      console.log(`OrdersContext: Response status: ${response.status}`);
-      
       // If response is not ok (status outside 200-299), throw error
       if (!response.ok) {
-        if (response.status === 401) {
-          console.error('OrdersContext: Authentication failed (401)');
-          
-          // Try to get auth token and log if successful
-          try {
-            const token = await orderPaymentsAuth.getAuthToken();
-            console.log('OrdersContext: Auth token exists:', !!token);
-          } catch (tokenErr) {
-            console.error('OrdersContext: Failed to get auth token:', tokenErr);
-          }
-        }
-        
         // Try to get error message from response
         const errorBody = await response.text();
-        console.error(`OrdersContext: API error - ${response.status} ${response.statusText}`, errorBody);
         throw new Error(`API error: ${response.status} ${response.statusText} - ${errorBody}`);
       }
       
@@ -302,7 +269,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
       const data = await response.json();
       return data;
     } catch (error: any) {
-      console.error('OrdersContext: API call failed:', error);
       setError(error.message);
       throw error;
     }
@@ -315,15 +281,10 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
     
     // Don't proceed if no user ID, but retry a few times if auth might still be initializing
     if (!userId) {
-      console.error('OrdersContext: Cannot fetch orders - user is not authenticated');
-      
       // Retry up to 3 times with a delay to allow Firebase auth to initialize
       if (retryCount < 3) {
-        console.log(`OrdersContext: Retrying authentication (attempt ${retryCount + 1} of 3)...`);
-        
         // Wait longer with each retry attempt
         const delayMs = 1000 * (retryCount + 1); // 1s, 2s, 3s
-        console.log(`OrdersContext: Waiting ${delayMs}ms before retry...`);
         
         setTimeout(() => fetchOrders(retryCount + 1), delayMs);
         return;
@@ -337,15 +298,12 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
       return;
     }
     
-    console.log('OrdersContext: fetchOrders called with user ID:', userId);
     setCurrentUserId(userId); // Update the state in case it changed
     
     setLoading(true);
     setError(null);
 
     try {
-      console.log('OrdersContext: Sending API request for orders...');
-      
       // Create a direct API request with XMLHttpRequest to ensure headers are sent
       const xhr = new XMLHttpRequest();
       xhr.open('GET', `${API_URL}/api/orders`, true);
@@ -357,28 +315,16 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
       xhr.setRequestHeader('uid', userId);     // Firebase field name format
       xhr.withCredentials = true;
       
-      console.log('OrdersContext: Sending request with explicit user-id headers:', userId);
-      
       // Use a Promise to handle the XMLHttpRequest
       const response = await new Promise<string>((resolve, reject) => {
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve(xhr.responseText);
           } else {
-            // Log specific error for authentication failures
-            if (xhr.status === 401) {
-              console.error('OrdersContext: Authentication failed (401) - user ID might not be recognized by the server');
-              console.error('OrdersContext: Request headers:', {
-                'user-id': userId,
-                'userId': userId,
-                'userid': userId
-              });
-            }
             reject(new Error(`API error: ${xhr.status} - ${xhr.responseText || 'No response data'}`));
           }
         };
         xhr.onerror = () => {
-          console.error('OrdersContext: Network error when fetching orders');
           reject(new Error('Network error when trying to fetch orders'));
         };
         xhr.send();
@@ -386,7 +332,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
       
       // Parse the response
       const data = JSON.parse(response);
-      console.log('OrdersContext: Orders data received:', data);
       
       // Process the data
       if (Array.isArray(data)) {
@@ -423,11 +368,8 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
     } catch (err: any) {
       // If authentication error and we still have retries left, try again
       if (err.message.includes('401') && retryCount < 3) {
-        console.log(`OrdersContext: Authentication error, retrying (${retryCount + 1} of 3)...`);
-        
         // Exponential backoff for retries
         const delayMs = 1000 * Math.pow(2, retryCount);
-        console.log(`OrdersContext: Waiting ${delayMs}ms before retry...`);
         
         setTimeout(() => fetchOrders(retryCount + 1), delayMs);
         return;
@@ -559,43 +501,34 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
       let data;
       try {
         data = await response.json();
-        console.log('OrdersContext: Raw response data:', JSON.stringify(data));
       } catch (e) {
-        console.error('OrdersContext: Failed to parse JSON response:', e);
         throw new Error('Invalid JSON response from server');
       }
 
       // Check for empty or null response
       if (!data) {
-        console.error('OrdersContext: Empty response data from API');
         throw new Error('Server returned empty response');
       }
       
       // Check for error in the response
       if (data.error) {
-        console.error('OrdersContext: Server returned error:', data.error, data.message);
         throw new Error(data.message || data.error);
       }
       
       // Handle when data is an array (incorrect response for order creation)
       if (Array.isArray(data)) {
-        console.error('OrdersContext: Server returned an array instead of an order object:', data);
         throw new Error('Invalid server response format - received array instead of order');
       }
 
       // The response can be either directly the order or inside an order property
       const newOrder = data.order || data;
       
-      console.log('OrdersContext: Extracted order data:', newOrder);
-      
       // Validate the order object
       if (!newOrder) {
-        console.error('OrdersContext: Order is null/undefined in API response:', data);
         throw new Error('Server returned null order');
       }
       
       if (!newOrder.id) {
-        console.error('OrdersContext: Invalid response format - missing order ID. Full response:', data);
         throw new Error('Invalid response format - missing order ID');
       }
       
@@ -622,8 +555,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
         sourceCollection: newOrder.sourceCollection
       };
       
-      console.log('OrdersContext: Final validated order:', validatedOrder);
-      
       // Add the new order to the orders list
       setOrders(prevOrders => [...prevOrders, validatedOrder]);
       setBuyerOrders(prevOrders => [...prevOrders, validatedOrder]);
@@ -631,7 +562,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
       return validatedOrder;
     } catch (err: any) {
       setError(`Failed to create order: ${err.message}`);
-      console.error('OrdersContext: Error creating order from conversation/offer:', err);
       throw err;
     } finally {
       setLoading(false);
@@ -660,7 +590,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
       setSellerOrders(updateOrderInList);
     } catch (err: any) {
       setError(`Failed to update order status: ${err.message}`);
-      console.error('Error updating order status:', err);
       throw err;
     } finally {
       setLoading(false);
@@ -683,17 +612,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
       };
     } catch (err: any) {
       setError(`Failed to create payment: ${err.message}`);
-      console.error('Error creating payment:', err);
-      
-      // Fallback to client-side generation for development only
-      const order = await fetchOrderById(orderId);
-      const stripeResponse = await createStripePaymentIntent(
-        order.price.total * 100,
-        order.price.currency,
-        { orderId }
-      );
-      
-      return stripeResponse;
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -728,7 +647,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }): JSX.Eleme
       });
     } catch (err: any) {
       setError(`Failed to confirm payment: ${err.message}`);
-      console.error('Error confirming payment:', err);
       throw err;
     } finally {
       setLoading(false);

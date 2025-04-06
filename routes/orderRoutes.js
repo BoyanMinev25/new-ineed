@@ -241,64 +241,27 @@ const getAllOrders = async (req, res) => {
 // Get a specific order by ID
 const getOrderById = async (req, res) => {
   try {
-    console.log(`✅ GET /api/orders/${req.params.orderId} request received`);
+    // Fetch order from Firestore
+    const orderDoc = await db.collection('orders').doc(req.params.orderId).get();
     
-    // Get the order ID from the params
-    const orderId = req.params.orderId;
-    
-    // Get the user ID from the request (assuming authentication middleware adds this)
-    const userId = req.query.userId || req.headers['user-id'];
-    
-    // Check if Firebase/Firestore is available
-    if (!db) {
-      console.warn('⚠️ Firestore not available for order lookup, returning mock data');
-      // Return mock order as fallback
-      return res.json({
-        id: req.params.orderId,
-        status: 'In Progress',
-        amount: 1250.00,
-        description: 'Service Description (Mock Order - Firestore Unavailable)',
-        serviceType: 'Service Type',
-        sellerName: 'Service Provider Name',
-        createdAt: new Date().toISOString(),
-        buyerId: 'user-123',
-        sellerId: 'user-456',
-        buyerName: 'Client Name',
-        role: 'buyer'
-      });
-    }
-    
-    // Fetch the order from Firestore
-    const orderDoc = await db.collection('orders').doc(orderId).get();
-    
+    // Check if order exists
     if (!orderDoc.exists) {
-      console.log(`Order ${orderId} not found, returning 404`);
-      return res.status(404).json({ 
-        message: 'Order not found',
-        orderId: req.params.orderId,
-        timestamp: new Date().toISOString()
-      });
+      return res.status(404).json({ message: 'Order not found' });
     }
     
     // Get the order data
     const orderData = orderDoc.data();
     
-    // Determine the user's role in this order
+    // Determine role
     let role = null;
+    const userId = req.query.userId || req.headers['user-id'];
+    
     if (userId) {
       if (orderData.buyerId === userId) {
         role = 'buyer';
       } else if (orderData.sellerId === userId) {
         role = 'seller';
       }
-    }
-    
-    // Check if the user is authorized to view this order
-    if (userId && role === null) {
-      return res.status(403).json({
-        message: 'You are not authorized to view this order',
-        timestamp: new Date().toISOString()
-      });
     }
     
     // Prepare the response
@@ -312,42 +275,11 @@ const getOrderById = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.json(order);
   } catch (error) {
-    console.error('❌ Error fetching order from Firebase:', error);
-    console.log('Falling back to mock data due to error');
-    
-    // Return mock order as fallback
-    const mockOrder = {
-      id: req.params.orderId,
-      status: 'In Progress',
-      amount: 1250.00,
-      description: 'Service Description (Mock Order - API Error Fallback)',
-      serviceType: 'Service Type',
-      sellerName: 'Service Provider Name',
-      createdAt: new Date().toISOString(),
-      buyerId: 'user-123',
-      sellerId: 'user-456',
-      buyerName: 'Client Name',
-      role: 'buyer'
-    };
-    
-    res.json(mockOrder);
+    res.status(500).json({ 
+      message: 'Error fetching order',
+      error: error.message
+    });
   }
-};
-
-// Direct test endpoint
-const getTestEndpoint = (req, res) => {
-  console.log('✅ TEST ENDPOINT: /api/orders/test accessed');
-  res.json({ 
-    message: 'Order routes API is working', 
-    timestamp: new Date().toISOString(),
-    test: true
-  });
-};
-
-// Test ping route
-const getTestPing = (req, res) => {
-  console.log('✅ Test ping route accessed');
-  res.json({ message: 'Order routes are working', timestamp: new Date().toISOString() });
 };
 
 // Create a new order from a service ad
@@ -448,8 +380,6 @@ const createOrderFromAd = async (req, res) => {
 // Create a new order from an offer
 const createOrderFromOffer = async (req, res) => {
   try {
-    console.log('✅ POST /api/orders/create-from-offer request received');
-    
     // Explicitly set content-type header
     res.setHeader('Content-Type', 'application/json');
     
@@ -457,11 +387,8 @@ const createOrderFromOffer = async (req, res) => {
     const { offerId } = req.body;
     const userId = req.query.userId || req.headers['user-id'];
     
-    console.log(`Creating order from offer [${offerId}] for user [${userId}]`);
-    
     // Validate required fields
     if (!offerId) {
-      console.log('Missing offerId field, returning 400');
       return res.status(400).json({
         message: 'Missing offerId field',
         timestamp: new Date().toISOString()
@@ -470,7 +397,6 @@ const createOrderFromOffer = async (req, res) => {
     
     // Check if user is authenticated
     if (!userId) {
-      console.log('No user-id header, returning 401');
       return res.status(401).json({
         message: 'Authentication required',
         timestamp: new Date().toISOString()
@@ -479,31 +405,10 @@ const createOrderFromOffer = async (req, res) => {
     
     // Check if Firebase/Firestore is available
     if (!db) {
-      console.warn('⚠️ Firestore not available for creating order, returning mock data');
-      // Generate a random mock order ID
-      const mockOrderId = 'mock-' + Math.random().toString(36).substr(2, 9);
-      
-      // Create mock order response
-      const mockResponse = {
-        order: {
-          id: mockOrderId,
-          offerId,
-          buyerId: userId,
-          sellerId: 'mock-seller-id',
-          amount: 500,
-          description: 'Mock order created without Firebase',
-          status: 'pending_payment',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          role: 'buyer'
-        },
-        success: true,
+      return res.status(503).json({
+        message: 'Database service unavailable',
         timestamp: new Date().toISOString()
-      };
-      
-      console.log('Returning mock order data:', mockResponse);
-      
-      return res.status(201).json(mockResponse);
+      });
     }
     
     // First try to fetch the offer from 'offers' collection
@@ -789,7 +694,6 @@ const createOrderFromOffer = async (req, res) => {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('❌ Error creating order from offer:', error);
     res.status(500).json({
       message: 'Error creating order from offer',
       error: error.message,
@@ -1094,9 +998,6 @@ const checkStripeConfig = async (req, res) => {
 
 // Define route handlers
 router.get('/', getAllOrders);
-router.get('/test', getTestEndpoint);
-router.get('/test/ping', getTestPing);
-router.get('/check-stripe-config', checkStripeConfig);
 router.get('/:orderId', getOrderById);
 router.post('/create-from-ad', createOrderFromAd);
 router.post('/create-from-offer', createOrderFromOffer);
@@ -1106,54 +1007,60 @@ router.post('/webhook', handleStripeWebhook);
 
 // Export a handle method for direct calling
 const handle = (req, res) => {
-  console.log('🔶 Direct call to orderRoutes.handle');
-  console.log(`🔶 Request path: ${req.path}, Original URL: ${req.originalUrl}, Method: ${req.method}`);
-  
-  // Ensure JSON content type
-  res.setHeader('Content-Type', 'application/json');
-  
-  // Special handling for creating order from offer
-  if (
-    req.path === '/create-from-offer' || 
-    req.originalUrl === '/api/orders/create-from-offer' ||
-    (req.path === '/' && req.method === 'POST' && req.body && req.body.offerId)
-  ) {
-    console.log('🔶 Routing to createOrderFromOffer handler via handle method');
-    return createOrderFromOffer(req, res);
-  } 
-  
-  // Different handling based on URL path
-  else if (req.path === '/' || req.originalUrl === '/api/orders') {
-    // Return all orders
-    return getAllOrders(req, res);
-  } else if (req.params.orderId) {
-    // Return a specific order
-    return getOrderById(req, res);
-  } else if (req.path === '/test' || req.originalUrl === '/api/orders/test') {
-    // Test endpoint
-    return getTestEndpoint(req, res);
-  } else if (req.path === '/test/ping' || req.originalUrl === '/api/orders/test/ping') {
-    // Test ping endpoint
-    return getTestPing(req, res);
-  } else if (req.path === '/check-stripe-config') {
-    // Check Stripe configuration
-    return checkStripeConfig(req, res);
-  } else if (req.path === '/create-from-ad') {
-    // Create a new order from a service ad
-    return createOrderFromAd(req, res);
-  } else if (req.path.startsWith('/') && req.path.endsWith('/status')) {
-    // Update order status
-    return updateOrderStatus(req, res);
-  } else if (req.path.startsWith('/') && req.path.endsWith('/payment-intent')) {
-    // Create payment intent for an order
-    return createPaymentIntent(req, res);
-  } else if (req.path === '/webhook') {
-    // Webhook handler for Stripe events
-    return handleStripeWebhook(req, res);
-  } else {
-    console.log(`Unrecognized path in handle method: ${req.path}`);
-    // Default - return all orders
-    return getAllOrders(req, res);
+  try {
+    console.log(`[handle] Order routes handling request: ${req.method} ${req.path} (${req.originalUrl})`);
+    
+    // Check if we're handling the correct endpoint
+    if (!req.originalUrl.startsWith('/api/orders') && !req.originalUrl.startsWith('/orders')) {
+      console.warn(`[handle] Unexpected path [${req.originalUrl}], expected orders path`);
+    }
+    
+    // Handle based on method and path
+    if (req.method === 'GET') {
+      // Get all orders
+      if (req.path === '/' || req.path === '' || req.originalUrl === '/api/orders') {
+        return getAllOrders(req, res);
+      }
+      
+      // Return a specific order
+      if (req.path.match(/^\/[a-zA-Z0-9-]+$/) || req.originalUrl.match(/^\/api\/orders\/[a-zA-Z0-9-]+$/)) {
+        // Return a specific order
+        return getOrderById(req, res);
+      } else if (req.path === '/check-stripe-config') {
+        // Check Stripe configuration
+        return checkStripeConfig(req, res);
+      }
+    } else if (req.method === 'POST') {
+      // Create a new order
+      if (req.path === '/create-from-ad') {
+        return createOrderFromAd(req, res);
+      } else if (req.path === '/create-from-offer') {
+        return createOrderFromOffer(req, res);
+      } else if (req.path === '/payment/create-intent') {
+        return createPaymentIntent(req, res);
+      } else if (req.path === '/webhook' || req.path === '/webhooks/stripe') {
+        return handleStripeWebhook(req, res);
+      } else if (req.path === '/status') {
+        return updateOrderStatus(req, res);
+      }
+    }
+    
+    // If we get here, route wasn't matched
+    console.warn(`[handle] No matching route for ${req.method} ${req.path}`);
+    return res.status(404).json({
+      message: 'Order API endpoint not found',
+      method: req.method,
+      path: req.path,
+      originalUrl: req.originalUrl,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error in order routes handler:', error);
+    return res.status(500).json({
+      message: 'Order API server error',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 };
 

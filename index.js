@@ -113,22 +113,6 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
-// Direct API tests to check routing
-app.get('/api/test', (req, res) => {
-  res.status(200).json({ 
-    message: 'API endpoint test successful',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Direct orders API test
-app.get('/api/orders-test', (req, res) => {
-  res.status(200).json({ 
-    message: 'Orders API endpoint test successful',
-    timestamp: new Date().toISOString()
-  });
-});
-
 // API Routes - Define these BEFORE the static file serving and with explicit path
 app.use('/api/ai', require('./routes/vercelAIRoutes'));
 app.use('/api/messaging', require('./routes/messagingRoutes'));
@@ -182,9 +166,6 @@ app.get('/orders', (req, res) => {
   // Capture the original user-id header
   const userId = req.headers['user-id'] || req.query.userId;
   
-  console.log('📋 Proxying /orders request with headers:', req.headers);
-  console.log('📋 User ID from header:', userId);
-  
   // Prepare headers for the forwarded request
   const requestHeaders = {
     'Accept': 'application/json',
@@ -195,9 +176,6 @@ app.get('/orders', (req, res) => {
   // Add the user-id header if it exists
   if (userId) {
     requestHeaders['user-id'] = userId;
-    console.log('📋 Forwarding user-id in proxy request:', userId);
-  } else {
-    console.log('📋 No user-id found to forward');
   }
   
   // Forward to the API
@@ -251,9 +229,6 @@ app.get('/orders/:orderId', (req, res) => {
   // Capture the original user-id header
   const userId = req.headers['user-id'] || req.query.userId;
   
-  console.log('📋 Proxying /orders/:orderId request with headers:', req.headers);
-  console.log('📋 User ID from header:', userId);
-  
   // Prepare headers for the forwarded request
   const requestHeaders = {
     'Accept': 'application/json',
@@ -264,9 +239,6 @@ app.get('/orders/:orderId', (req, res) => {
   // Add the user-id header if it exists
   if (userId) {
     requestHeaders['user-id'] = userId;
-    console.log('📋 Forwarding user-id in proxy request:', userId);
-  } else {
-    console.log('📋 No user-id found to forward');
   }
   
   // Forward to the API

@@ -34,7 +34,6 @@ export const routeHelpers = {
 // Authentication helper
 export const orderPaymentsAuth = {
   initializeWithUser: (user) => {
-    console.log('Order payments module initialized with user:', user);
     return true;
   }
 };
@@ -43,7 +42,6 @@ export const orderPaymentsAuth = {
 export const OrderDetailCard = ({ order, onActionClick }) => {
   // Make sure we're handling the order object safely
   if (!order || typeof order !== 'object') {
-    console.error('Invalid order object passed to OrderDetailCard:', order);
     return React.createElement('div', { className: 'error-card' }, 'Error: Invalid order data');
   }
 
@@ -61,7 +59,6 @@ export const OrderDetailCard = ({ order, onActionClick }) => {
     try {
       formattedDate = new Date(order.createdAt).toLocaleString();
     } catch (e) {
-      console.error('Error formatting date:', e);
       formattedDate = String(order.createdAt);
     }
   }
@@ -81,7 +78,7 @@ export const OrderDetailCard = ({ order, onActionClick }) => {
           try {
             onActionClick(order);
           } catch (e) {
-            console.error('Error in onActionClick handler:', e);
+            // Error handling without console.error
           }
         }
       }
@@ -97,7 +94,6 @@ export const OrderDetailCard = ({ order, onActionClick }) => {
 export const OrderTimeline = ({ order }) => {
   // Validate order object
   if (!order || typeof order !== 'object') {
-    console.error('Invalid order object passed to OrderTimeline:', order);
     return React.createElement('div', { className: 'error-card' }, 'Error: Invalid order data');
   }
 
@@ -107,7 +103,6 @@ export const OrderTimeline = ({ order }) => {
     try {
       formattedDate = new Date(order.createdAt).toLocaleString();
     } catch (e) {
-      console.error('Error formatting date:', e);
       formattedDate = String(order.createdAt);
     }
   }
